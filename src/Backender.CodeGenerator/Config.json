@@ -1,0 +1,52 @@
+{
+  "Version": "7",
+  "SolutionName": "Defualt",
+  "SoltionNameSpace": "DefualtNameSpace",
+  "Domains": {
+    "Entites": [
+      {
+        "EntityName": "Pesron",
+        "Cols": [
+          {
+            "ColName": "",
+            "ColType": "",
+            "IsNullable": true,
+            "Options": "-g"
+          },
+          {
+            "ColName": "",
+            "ColType": ""
+          },
+          {
+            "ColName": "",
+            "ColType": ""
+          }
+        ]
+      },
+      {
+        "EntityName": "Shoping",
+        "Cols": [
+          {
+            "ColName": "",
+            "ColType": ""
+          },
+          {
+            "ColName": "",
+            "ColType": ""
+          },
+          {
+            "ColName": "",
+            "ColType": ""
+          }
+        ]
+      }
+    ],
+    "RealationShips": [
+      {
+        "Entity1": "",
+        "Entity2": "",
+        "RealationShipType": ""
+      }
+    ]
+  }
+}
