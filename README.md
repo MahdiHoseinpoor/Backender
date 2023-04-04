@@ -3,15 +3,6 @@
 
 Backender is an open source project in C# language that uses a config file to create the backend of your site in the repository pattern (yet!).
 
-## Nuget Packages
-
-| Package | NuGet Stable |  Downloads |
-| ------- | -------- | ------- |
-| [Backender.CLI](https://www.nuget.org/packages/SmartCode.CLI/) | [![Backender.CLI](https://img.shields.io/nuget/v/SmartCode.CLI.svg)](https://www.nuget.org/packages/SmartCode.CLI/)  | [![Backender.CLI](https://img.shields.io/nuget/dt/SmartCode.CLI.svg)](https://www.nuget.org/packages/SmartCode.CLI/) |
-
-### Demo
-
-
 ### Getting Started
 
 1. Install from .NET Core Global Tool  
