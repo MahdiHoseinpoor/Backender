@@ -6,13 +6,17 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PackAsTool>true</PackAsTool>
-    <ToolCommandName>palino</ToolCommandName>
+    <ToolCommandName>Backender</ToolCommandName>
     <PackageOutputPath>./nupkg</PackageOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Backender.CodeEditor.CSharp\Backender.CodeEditor.CSharp.csproj" />
     <ProjectReference Include="..\Backender.CodeGenerator\Backender.CodeGenerator.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="nupkg\" />
   </ItemGroup>
 
 </Project>
