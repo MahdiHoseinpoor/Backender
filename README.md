@@ -11,7 +11,7 @@ Backender is an open source project in C# language that uses a config file to cr
     dotnet tool install --global Backender.CLI
   ```
 
-2. Create or edit config file (default: Backender.yml)
+2. Create or edit config file
 3. the command line executes the Backender command.
     - Backender
     - wait for prompt to enter the configuration file path (optional: Backender.yml file in the default program root directory)
