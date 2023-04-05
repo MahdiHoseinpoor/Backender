@@ -1,7 +1,15 @@
 
+<p align="center">
+  <img width="100"src="./docs/Logo.png"/>
+</p>
+
 # Backender
 
 Backender is an open source project in C# language that uses a config file to create the backend of your site in the repository pattern (yet!).
+
+### Demo
+
+![Backender](./docs/Demo.gif)
 
 ### Getting Started
 
