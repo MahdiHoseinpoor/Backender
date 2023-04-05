@@ -84,7 +84,7 @@ namespace Backender.CodeGenerator
 			source = source.Replace("$InnerObjects$", string.Join("\n", innerObjects));
 
 			SourceFile.Name = _class.Name;
-			SourceFile.SourceCode = source;
+			SourceFile.SourceCode = Format(source);
 			SourceFile.ProjectName = _class.ProjectName;
 			return SourceFile;
 		}
@@ -112,8 +112,7 @@ namespace Backender.CodeGenerator
 			source = source.Replace("$InnerObjects$", string.Join("\n", innerObjects));
 
 			SourceFile.Name = _interface.Name;
-
-			SourceFile.SourceCode = source;
+			SourceFile.SourceCode = Format(source);
 			SourceFile.ProjectName = _interface.ProjectName;
 			return SourceFile;
 		}
@@ -135,8 +134,7 @@ namespace Backender.CodeGenerator
 			source = source.Replace("$EnumValues$", string.Join(",\n", EnumValues));
 
 			SourceFile.Name = _enum.Name;
-
-			SourceFile.SourceCode = source;
+			SourceFile.SourceCode = Format(source);
 			SourceFile.ProjectName = _enum.ProjectName;
 			return SourceFile;
 		}
@@ -315,6 +313,39 @@ namespace Backender.CodeGenerator
 				Folders.AddRange(nameSpace.Replace(proj.DefaultNameSpace + ".", "").Split('.'));
 			}
 			return Path.Combine(proj.Name, string.Join('\\', Folders));
+		}
+
+		public string Format(string sourceCode)
+		{
+			var BracketOrder = 0;
+			var SourceLines = sourceCode.Split('\n');
+			var SourceFormatedLines = new List<string>();
+			foreach (var Line in SourceLines) {
+				var Formatedline = Line.Trim();
+
+				if (string.IsNullOrEmpty(Line) || string.IsNullOrWhiteSpace(Line)) continue;
+
+				if (!IsThisLineProperty(Line))
+				{
+					if (Line.Contains('}')) BracketOrder--;
+				}
+
+				Formatedline = String.Concat(Enumerable.Repeat("    ", BracketOrder)) + Formatedline;
+				SourceFormatedLines.Add(Formatedline);
+				if (Line.Contains('{')) BracketOrder++;
+
+				if (IsThisLineProperty(Line))
+				{
+					if (Line.Contains('}')) BracketOrder--;
+				}
+
+			}
+			return string.Join('\n',SourceFormatedLines);
+		}
+
+		private bool IsThisLineProperty(string line)
+		{
+			return line.Contains("get") && line.Contains("{") && line.Contains("}");
 		}
 	}
 }

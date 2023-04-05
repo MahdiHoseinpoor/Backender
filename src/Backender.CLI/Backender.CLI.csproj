@@ -8,6 +8,9 @@
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>Backender</ToolCommandName>
     <PackageOutputPath>./nupkg</PackageOutputPath>
+    <Title>Backender.CLI</Title>
+    <RepositoryUrl>https://github.com/MahdiHoseinpoor/Backender</RepositoryUrl>
+    <Description>Create the Backend of your website in fastest way!</Description>
   </PropertyGroup>
 
   <ItemGroup>
