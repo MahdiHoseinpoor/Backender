@@ -78,3 +78,12 @@ Domains:
       Value: 0
     - Name: NotInJib
       Value: 2
+```
+The options field in the entity Cols can receive multiple options with spaces between them.
+-r means required, and gives it the required property
+-g means get, a method is defined in the repository that returns this object based on this field
+
+The Realations can be
+  -O2O : ONE TO ONE
+  -O2M : ONE TO MANY
+  -M2M : MANY TO MANY
