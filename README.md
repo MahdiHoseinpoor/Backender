@@ -94,5 +94,7 @@ Domains:
     - O2O : ONE TO ONE
     - O2M : ONE TO MANY
     - M2M : MANY TO MANY
-    
+
+### More Informations
+https://medium.com/@hoseinpoor2006/why-you-should-use-backender-for-your-next-asp-net-core-project-de026ec2b898
     
