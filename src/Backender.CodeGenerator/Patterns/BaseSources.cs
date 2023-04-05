@@ -8,7 +8,7 @@ namespace Backender.CodeGenerator.Patterns
 {
     public static class BaseSources
     {
-        public static string ClassSource = @"//This Class Is Auto Generated with PalinoCore, For get more Information check https://palokino.com/palinoCore
+        public static string ClassSource = @"//This Class Is Auto Generated with Backender, For get more Information check https://github.com/MahdiHoseinpoor/Backender
 $Usings$
 namespace $NameSpace$
 {
@@ -17,7 +17,7 @@ namespace $NameSpace$
         $InnerObjects$
     }
 }";
-        public static string InterfaceSource = @"//This Interface Is Auto Generated with PalinoCore, For get more Information check https://palokino.com/palinoCore
+        public static string InterfaceSource = @"//This Interface Is Auto Generated with Backender, For get more Information check https://github.com/MahdiHoseinpoor/Backender
 $Usings$
 namespace $NameSpace$
 {
@@ -26,7 +26,7 @@ namespace $NameSpace$
         $InnerObjects$
     }
 }";
-		public static string EnumSource = @"//This Interface Is Auto Generated with PalinoCore, For get more Information check https://palokino.com/palinoCore
+		public static string EnumSource = @"//This Enum Is Auto Generated with Backender, For get more Information check https://github.com/MahdiHoseinpoor/Backender
 namespace $NameSpace$
 {
     $AccessModifier$ enum $EnumName$

@@ -65,8 +65,11 @@ namespace Backender.CodeGenerator
             cmd.StartInfo.UseShellExecute = false;
             cmd.Start();
 
-            CsFileSources.Add(sourceGenerator.AddBaseEntity(solution.GetProjectByName(solution.Name+".Core")));
-            CsFileSources.AddRange(sourceGenerator.AddBaseRepo(solution.GetProjectByName(solution.Name+".Data")));
+			if (!CsFileSources.Any(p => p.Name == "BaseEntity"))
+			{
+				CsFileSources.Add(sourceGenerator.AddBaseEntity(solution.GetProjectByName(solution.Name + ".Core")));
+			}
+			CsFileSources.AddRange(sourceGenerator.AddBaseRepo(solution.GetProjectByName(solution.Name+".Data")));
 
 
             using (StreamWriter sw = cmd.StandardInput)
