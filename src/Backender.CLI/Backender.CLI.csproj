@@ -11,6 +11,13 @@
     <Title>Backender.CLI</Title>
     <RepositoryUrl>https://github.com/MahdiHoseinpoor/Backender</RepositoryUrl>
     <Description>Create the Backend of your website in fastest way!</Description>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+    <IncludeSymbols>False</IncludeSymbols>
+    <PackageIcon>Logo.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageVersion>1.0.0</PackageVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,6 +27,17 @@
 
   <ItemGroup>
     <Folder Include="nupkg\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="bin\Release\net7.0\Logo.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>

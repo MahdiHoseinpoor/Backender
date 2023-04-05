@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoBlog.Core", "GoBlog.Core\GoBlog.Core.csproj", "{2A462355-D639-46D6-89DB-B29EF52F70B4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoBlog.Data", "GoBlog.Data\GoBlog.Data.csproj", "{D3B59318-09DB-4DEF-B39B-B62A5B31FFEE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoBlog.Services", "GoBlog.Services\GoBlog.Services.csproj", "{61923B91-A91A-4FED-A2E7-0B7BCBA08894}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2A462355-D639-46D6-89DB-B29EF52F70B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A462355-D639-46D6-89DB-B29EF52F70B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A462355-D639-46D6-89DB-B29EF52F70B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A462355-D639-46D6-89DB-B29EF52F70B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D3B59318-09DB-4DEF-B39B-B62A5B31FFEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3B59318-09DB-4DEF-B39B-B62A5B31FFEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3B59318-09DB-4DEF-B39B-B62A5B31FFEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3B59318-09DB-4DEF-B39B-B62A5B31FFEE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{61923B91-A91A-4FED-A2E7-0B7BCBA08894}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{61923B91-A91A-4FED-A2E7-0B7BCBA08894}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{61923B91-A91A-4FED-A2E7-0B7BCBA08894}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{61923B91-A91A-4FED-A2E7-0B7BCBA08894}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

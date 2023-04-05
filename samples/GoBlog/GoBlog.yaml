@@ -1,0 +1,51 @@
+SolutionName: GoBlog
+SoltionNameSpace: GoBlog
+Domains:
+  Entites:
+  - EntityName: Post
+    Cols:
+    - ColName: Title
+      ColType: string
+      Options: "-r"
+    - ColName: Author
+      ColType: string
+      Options: "-g"
+    - ColName: Content
+      ColType: string
+  - EntityName: Comment
+    Cols:
+    - ColName: Content
+      ColType: string
+      Options: "-r"
+    - ColName: Name
+      ColType: string
+      Options: "-r"
+    - ColName: CommentStatus
+      ColType: CommentStatus
+      Options: "-r"
+    - ColName: Email
+      ColType: string
+  - EntityName: Category
+    Cols:
+    - ColName: Title
+      ColType: string
+      Options: "-r"
+    - ColName: Description
+      ColType: string
+      Options: "-r"
+  RealationShips:
+  - Entity1: Post
+    Entity2: Comment
+    RealationShipType: O2M
+  - Entity1: Category
+    Entity2: Post
+    RealationShipType: O2M
+  Enums:
+  - EnumName: CommentStatus
+    EnumValues:
+    - Name: Pending
+      Value: 1
+    - Name: Accepted
+      Value: 2
+    - Name: Failed
+      Value: 3

@@ -19,7 +19,6 @@ namespace Backender.ConsoleApp
 			Console.WriteLine("-------------------- Welcome to Backender! --------------------");
 			Console.ForegroundColor = ConsoleColor.White;
 			Console.WriteLine("Enter your Configuration File Location:");
-			Console.WriteLine("");
 			app.FileName = Console.ReadLine()!.Trim();
 #endif
 
