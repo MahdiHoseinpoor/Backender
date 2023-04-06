@@ -68,7 +68,11 @@ namespace Backender.CodeGenerator
             cmd.StartInfo.FileName = "cmd.exe";
             cmd.StartInfo.RedirectStandardInput = true;
             cmd.StartInfo.UseShellExecute = false;
+#if DEBUG
+#else
+		
 			cmd.StartInfo.CreateNoWindow = true;
+#endif
 			cmd.Start();
 
 			if (!CsFileSources.Any(p => p.Name == "BaseEntity"))

@@ -34,7 +34,7 @@
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
-    <None Include="bin\Release\net7.0\Logo.png">
+    <None Include="..\..\docs\Logo.png">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>

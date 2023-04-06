@@ -63,6 +63,7 @@ namespace Backender.CodeGenerator.Patterns.Repo
             foreach (var Entity in _config.Domains.Entites)
             {
                 var entityClass = Entity.EnitityGenerate(ref CoreProj);
+                var DtoClass = Entity.DtoGenerate(ref CoreProj);
                 var entityService = Entity.ServiceGenerate(ref ServicesProj, _config.Domains.RealationShips);
                 DbContextClass.AddProperty($"DbSet<{Entity.EntityName}>", Entity.EntityName);           
             }
@@ -71,6 +72,7 @@ namespace Backender.CodeGenerator.Patterns.Repo
             var enums = _config.Domains.Enums;
 			CoreProj.AddEnums(ref enums);
 			CoreProj.AddRealations(ref realations);
+			CoreProj.AddDtoRealations(ref realations);
             CoreProj.AddMiddleClassesRealations(realations);
             foreach (var Relation_M2M in _config.Domains.RealationShips.Where(p => p.RealationShipType == "M2M"))
             {

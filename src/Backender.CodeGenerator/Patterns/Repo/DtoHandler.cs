@@ -35,16 +35,20 @@ namespace Backender.CodeGenerator.Patterns.Repo
 			{
 				var class1 = proj.GetClassByName(Realation.Entity1 + "Dto");
 				var class2 = proj.GetClassByName(Realation.Entity2 + "Dto");
+				if (class1 == null || class2 == null) continue;
 				switch (Realation.RealationShipType)
 				{
 					case "M2M":
 					
 						break;
 					case "O2M":
-						
+						class2.AddProperty(Realation.Entity1 + "Dto", Realation.Entity1 + "Dto", AccessModifier.Public);
 						break;
 					case "O2O":
-					
+
+						class1.AddProperty(Realation.Entity2 + "Dto", Realation.Entity2 + "Dto", AccessModifier.Public);
+						class2.AddProperty(Realation.Entity1 + "Dto", Realation.Entity1 + "Dto", AccessModifier.Public);
+
 						break;
 					default:
 						break;
