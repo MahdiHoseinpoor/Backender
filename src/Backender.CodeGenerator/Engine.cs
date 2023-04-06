@@ -12,7 +12,9 @@ namespace Backender.CodeGenerator
 {
     public class Engine
     {
+		string _savePath;
 		public string FileName { get; set; }
+		public string SavePath { get { return _savePath; } }
 		public Engine(string fileName)
 		{
 			FileName = fileName;
@@ -21,9 +23,9 @@ namespace Backender.CodeGenerator
 		{
 
 		}
-		public void Run()
+		public async Task Run()
 		{
-			var configFile = File.ReadAllText(FileName);
+			var configFile = await File.ReadAllTextAsync(FileName);
 			var config = new Config();
 			if (Path.GetExtension(FileName).ToLower() == ".json")
 			{
@@ -37,12 +39,13 @@ namespace Backender.CodeGenerator
 			{
 				config = PalinoSerializer.Deserialize(configFile);
 			}
+			_savePath = Path.Combine(config.SavePath, config.SolutionName);
 			RepoPatternGenerator generator = new(config);
-			var solution = generator.Run();
-			Build(solution);
+			var solution =await generator.Run();
+			await Build(solution);
 			//Build(savePath, solution);
 		}
-        public static void CreateSourceFiles(string savePath, Solution solution,List<SourceFile> sourceFiles)
+        public static async Task CreateSourceFiles(string savePath, Solution solution,List<SourceFile> sourceFiles)
         {
             foreach (var sourceFile in sourceFiles)
             {
@@ -50,10 +53,12 @@ namespace Backender.CodeGenerator
                 {
                     Directory.CreateDirectory(Path.Combine(savePath,solution.Name, sourceFile.Path));
                 }
-                File.WriteAllText(Path.Combine(savePath, solution.Name, sourceFile.Path, $"{sourceFile.Name}.cs"), sourceFile.SourceCode);
-            }
-        }
-        public static void Build(Solution solution)
+               await File.WriteAllTextAsync(Path.Combine(savePath, solution.Name, sourceFile.Path, $"{sourceFile.Name}.cs"), sourceFile.SourceCode);
+			  Log($"'{sourceFile.Name}.cs' has been created", ConsoleColor.White);
+
+			}
+		}
+        public static async Task Build(Solution solution)
         {
             RepoSourceGenerator sourceGenerator = new ();
             var CsFileSources = new List<SourceFile>();
@@ -63,7 +68,8 @@ namespace Backender.CodeGenerator
             cmd.StartInfo.FileName = "cmd.exe";
             cmd.StartInfo.RedirectStandardInput = true;
             cmd.StartInfo.UseShellExecute = false;
-            cmd.Start();
+			cmd.StartInfo.CreateNoWindow = true;
+			cmd.Start();
 
 			if (!CsFileSources.Any(p => p.Name == "BaseEntity"))
 			{
@@ -85,6 +91,11 @@ namespace Backender.CodeGenerator
 					if (!File.Exists(solutionPath))
 					{
 						sw.WriteLine($"dotnet new sln --name {solution.Name}");
+
+					}
+					else
+					{
+						Log($"a solution named '{solution.Name}' in path '{solution.SavePath}' is existing",ConsoleColor.Yellow);
 					}
 					foreach (var project in solution.Projects)
                     {
@@ -97,7 +108,11 @@ namespace Backender.CodeGenerator
 							sw.WriteLine($"dotnet new classlib -n {project.Name} -f net7.0");
 							sw.WriteLine($"del {project.Name}\\Class1.cs");
 						}
-                        sw.WriteLine($"dotnet sln add {project.Name}");
+						else
+						{
+							Log($"a Project named '{project.Name}' is existing", ConsoleColor.Yellow);
+						}
+						sw.WriteLine($"dotnet sln add {project.Name}");
                         sw.WriteLine($"dotnet add {project.Name} package Microsoft.EntityFrameworkCore.SqlServer");
                     }
                     foreach (var project in solution.Projects)
@@ -124,10 +139,17 @@ namespace Backender.CodeGenerator
 							CsFileSource.Path = sourceGenerator.GetFilePath(project, csFile.NameSpace);
                             CsFileSources.Add(CsFileSource);
                         }
-                    }
-                }
-            }
-			CreateSourceFiles(savePath, solution, CsFileSources);
+					}
+				}
+			}
+			await cmd.WaitForExitAsync();
+
+			await CreateSourceFiles(savePath, solution, CsFileSources);
         }
-    }
+		public static void Log(string content, ConsoleColor consoleColor=ConsoleColor.White)
+		{
+			Console.ForegroundColor = consoleColor;
+			Console.WriteLine($"------ [{DateTime.Now}] : {content}\n");
+		}
+	}
 }

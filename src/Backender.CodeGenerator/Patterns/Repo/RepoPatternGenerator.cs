@@ -36,7 +36,7 @@ namespace Backender.CodeGenerator.Patterns.Repo
 		/// <returns>
 		/// The Solution object that created.
 		/// </returns>
-		public override Solution Run()
+		public override async Task<Solution> Run()
         {
             //Create Solution
             solution = new Solution(_config.SolutionName);

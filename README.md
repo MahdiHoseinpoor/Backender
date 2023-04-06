@@ -30,57 +30,61 @@ Backender is an open source project in C# language that uses a config file to cr
 
 ### Sample of config file in yaml
 ``` yaml
-SolutionName: GoBlog
-SoltionNameSpace: GoBlog
+SolutionName: Shopping
+SoltionNameSpace: ShoppingCore
+SavePath: "C://Sources/"
 Domains:
   Entites:
-  - EntityName: Post
+  - EntityName: Customer
     Cols:
-    - ColName: Title
+    - ColName: FirstName
       ColType: string
       Options: "-r"
-    - ColName: Author
+    - ColName: LastName
       ColType: string
-      Options: "-g"
-    - ColName: Content
-      ColType: string
-  - EntityName: Comment
-    Cols:
-    - ColName: Content
-      ColType: string
-      Options: "-r"
-    - ColName: Name
-      ColType: string
-      Options: "-r"
-    - ColName: CommentStatus
-      ColType: CommentStatus
-      Options: "-r"
     - ColName: Email
       ColType: string
-  - EntityName: Category
+      Options: "-g"
+  - EntityName: Product
     Cols:
-    - ColName: Title
+    - ColName: ProductName
+      ColType: string
+      Options: "-r"
+    - ColName: Price
       ColType: string
       Options: "-r"
     - ColName: Description
       ColType: string
+  - EntityName: Order
+    Cols:
+    - ColName: OrderDate
+      ColType: DateTime
+      Options: "-r"
+    - ColName: OrderStatus
+      ColType: OrderStatus
       Options: "-r"
   RealationShips:
-  - Entity1: Post
-    Entity2: Comment
+  - Entity1: Customer
+    Entity2: Order
     RealationShipType: O2M
-  - Entity1: Category
-    Entity2: Post
-    RealationShipType: O2M
+  - Entity1: Product
+    Entity2: Order
+    RealationShipType: M2M
   Enums:
-  - EnumName: CommentStatus
+  - EnumName: OrderStatus
     EnumValues:
-    - Name: Pending
+    - Name: InOrder
       Value: 1
-    - Name: Accepted
+    - Name: Closed
       Value: 2
-    - Name: Failed
+    - Name: Recived
       Value: 3
+  - EnumName: ProductType
+    EnumValues:
+    - Name: InJib
+      Value: 0
+    - Name: NotInJib
+      Value: 2
 ```
 1. The options field in the entity Cols can receive multiple options with spaces between them.
     - -r means required, and gives it the required property
@@ -90,7 +94,5 @@ Domains:
     - O2O : ONE TO ONE
     - O2M : ONE TO MANY
     - M2M : MANY TO MANY
-
-### More Informations
-https://medium.com/@mahdihoseinpoor/why-you-should-use-backender-for-your-next-asp-net-core-project-de026ec2b898
+    
     

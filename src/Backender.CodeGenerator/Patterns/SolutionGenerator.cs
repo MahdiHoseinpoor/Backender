@@ -9,7 +9,7 @@ namespace Backender.CodeGenerator.Patterns
 {
     public abstract class SolutionGenerator
     {
-        public abstract Solution Run();
+        public abstract  Task<Solution> Run();
         public abstract void OnConfigure();
     }
 }
