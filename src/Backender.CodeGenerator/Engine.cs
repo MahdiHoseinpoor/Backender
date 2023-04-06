@@ -69,8 +69,7 @@ namespace Backender.CodeGenerator
             cmd.StartInfo.RedirectStandardInput = true;
             cmd.StartInfo.UseShellExecute = false;
 #if DEBUG
-#else
-		
+#else	
 			cmd.StartInfo.CreateNoWindow = true;
 #endif
 			cmd.Start();
