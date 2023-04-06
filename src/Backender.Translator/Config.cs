@@ -33,6 +33,7 @@ namespace Backender.Translator
 	public class Entity
     {
         public string EntityName { get; set; }
+        public string EntityCategory { get; set; }
         public List<Col> Cols { get; set; } = new List<Col>();
 	}
 

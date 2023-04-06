@@ -57,7 +57,8 @@ namespace Backender.CodeGenerator.Patterns.Repo
             //Create DbContext
             var DbContextClass = DataProj.AddClass("ApplicationDbContext",baseClassName:"DbContext");
             DbContextClass.UsingNameSpaces.Add(CoreProj.DefaultNameSpace);
-            DbContextClass.UsingNameSpaces.Add("Microsoft.EntityFrameworkCore");
+			
+			DbContextClass.UsingNameSpaces.Add("Microsoft.EntityFrameworkCore");
 
             //Create EnitityModels
             foreach (var Entity in _config.Domains.Entites)
@@ -80,9 +81,12 @@ namespace Backender.CodeGenerator.Patterns.Repo
                 var MiddleClassEntity = middleClassDomain.Entites.FirstOrDefault();
                 var MiddleClass = MiddleClassEntity.ServiceGenerate(ref ServicesProj, middleClassDomain.RealationShips);
             }
-            DbContextClass.UsingNameSpaces.Add(CoreProj.CsFiles.OfType<Class>().FirstOrDefault(p => p.BaseClassName == "BaseEntity").NameSpace);
+			foreach (var EntityNameSpace in CoreProj.CsFiles.OfType<Class>().Where(p => p.BaseClassName == "BaseEntity").Select(p=>p.NameSpace).Distinct())
+			{
+				DbContextClass.UsingNameSpaces.Add(EntityNameSpace);
+			}
 
-            return solution;
+			return solution;
         }
       
     }

@@ -25,7 +25,13 @@ namespace Backender.CodeGenerator.Patterns.Repo
 		/// </returns>
 		public static Class ServiceGenerate(this Entity entity, ref Project proj, IEnumerable<RealationShip> realationShips)
         {
-            var entityService = proj.AddClass(entity.EntityName + "Service");
+			var AppendNameSpace = "";
+
+			if (!string.IsNullOrEmpty(entity.EntityCategory))
+			{
+				AppendNameSpace = entity.EntityCategory;
+			}
+			var entityService = proj.AddClass(entity.EntityName + "Service",AppendNameSpace:AppendNameSpace);
             var entityRepo = entityService.ImplementRepo(entity.EntityName);
             entityService.AddRepoWithCommonMethods(entity.EntityName);
             var realations = realationShips.GetRealationShipsByEntity(entity);
@@ -43,7 +49,11 @@ namespace Backender.CodeGenerator.Patterns.Repo
                 entityService.UsingNameSpaces.Add(item.DefaultNameSpace);
             }
             entityService.UsingNameSpaces.Add(proj.SolutionName + ".Core.Domains");
-            entityService.UsingNameSpaces.Add("Microsoft.EntityFrameworkCore");
+			if (!string.IsNullOrEmpty(entity.EntityCategory))
+			{
+				entityService.UsingNameSpaces.Add(proj.SolutionName + ".Core.Domains."+ AppendNameSpace);
+			}
+			entityService.UsingNameSpaces.Add("Microsoft.EntityFrameworkCore");
 
             proj.AddInterface(entityService.ToInterface());
             return entityService;

@@ -25,13 +25,20 @@ namespace Backender.CodeGenerator.Patterns.Repo
 		/// </returns>
 		public static Class EnitityGenerate(this Entity entity,ref Project proj,List<string> Options =null)
         {
-            var options = new List<string>();
+			var AppendNameSpace = "Domains";
+
+			if (!string.IsNullOrEmpty(entity.EntityCategory))
+			{
+				AppendNameSpace += "." + entity.EntityCategory;
+			}
+
+			var options = new List<string>();
             options.Add("EntityClass");
             if (Options != null)
             {
                 options.AddRange(Options);
             }
-            var entityClass = proj.AddClass(entity.EntityName, baseClassName: "BaseEntity", Options: options,AppendNameSpace:"Domains");
+            var entityClass = proj.AddClass(entity.EntityName, baseClassName: "BaseEntity", Options: options,AppendNameSpace: AppendNameSpace);
             foreach (var Col in entity.Cols)
             {
                var propery= entityClass.AddProperty(Col.ColType, Col.ColName, AccessModifier.Public);
