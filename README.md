@@ -30,61 +30,57 @@ Backender is an open source project in C# language that uses a config file to cr
 
 ### Sample of config file in yaml
 ``` yaml
-SolutionName: Shopping
-SoltionNameSpace: ShoppingCore
-SavePath: "C://Sources/"
+SolutionName: GoBlog
+SoltionNameSpace: GoBlog
 Domains:
   Entites:
-  - EntityName: Customer
+  - EntityName: Post
     Cols:
-    - ColName: FirstName
+    - ColName: Title
       ColType: string
       Options: "-r"
-    - ColName: LastName
-      ColType: string
-    - ColName: Email
+    - ColName: Author
       ColType: string
       Options: "-g"
-  - EntityName: Product
+    - ColName: Content
+      ColType: string
+  - EntityName: Comment
     Cols:
-    - ColName: ProductName
+    - ColName: Content
       ColType: string
       Options: "-r"
-    - ColName: Price
+    - ColName: Name
+      ColType: string
+      Options: "-r"
+    - ColName: CommentStatus
+      ColType: CommentStatus
+      Options: "-r"
+    - ColName: Email
+      ColType: string
+  - EntityName: Category
+    Cols:
+    - ColName: Title
       ColType: string
       Options: "-r"
     - ColName: Description
       ColType: string
-  - EntityName: Order
-    Cols:
-    - ColName: OrderDate
-      ColType: DateTime
-      Options: "-r"
-    - ColName: OrderStatus
-      ColType: OrderStatus
       Options: "-r"
   RealationShips:
-  - Entity1: Customer
-    Entity2: Order
+  - Entity1: Post
+    Entity2: Comment
     RealationShipType: O2M
-  - Entity1: Product
-    Entity2: Order
-    RealationShipType: M2M
+  - Entity1: Category
+    Entity2: Post
+    RealationShipType: O2M
   Enums:
-  - EnumName: OrderStatus
+  - EnumName: CommentStatus
     EnumValues:
-    - Name: InOrder
+    - Name: Pending
       Value: 1
-    - Name: Closed
+    - Name: Accepted
       Value: 2
-    - Name: Recived
+    - Name: Failed
       Value: 3
-  - EnumName: ProductType
-    EnumValues:
-    - Name: InJib
-      Value: 0
-    - Name: NotInJib
-      Value: 2
 ```
 1. The options field in the entity Cols can receive multiple options with spaces between them.
     - -r means required, and gives it the required property
