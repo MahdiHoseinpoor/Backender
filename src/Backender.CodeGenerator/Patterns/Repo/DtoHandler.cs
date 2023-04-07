@@ -75,6 +75,7 @@ namespace Backender.CodeGenerator.Patterns.Repo
 					}
 				}
 				AddPrepareMethod(entityFactory, entity, coreProj);
+				AddPrepareMethodOverLoad(entityFactory, entity, coreProj);
 				FactoryClasses.Add(entityFactory);
 			}
 			foreach (var FactoryClass in FactoryClasses)
@@ -124,7 +125,25 @@ namespace Backender.CodeGenerator.Patterns.Repo
 				$"Prepare{entity.EntityName}Dto",
 				PrepareCode,
 				Parameter);
+		}
+			private static void AddPrepareMethodOverLoad(Class entityFactory, Entity entity, Project coreProj)
+		{
+			var Parameter = new MethodParameter()
+			{
+				DataType = $"List<{entity.EntityName}>",
+				Name = entity.EntityName.ToLower().ToPlural()
+			};
 
+			var PrepareCode = $"var {entity.EntityName.ToLower()}Dtos = new List<{entity.EntityName}Dto>();\n" +
+				$"foreach (var {entity.EntityName.ToLower()} in {Parameter.Name})\n" +
+				$"{{\n" +
+				$"{entity.EntityName.ToLower()}Dtos.Add(Prepare{entity.EntityName}Dto(entity.EntityName.ToLower()));\n" +
+				$"}}\n" +
+				$"return {entity.EntityName.ToLower()}Dtos;";
+			entityFactory.AddMethod($"List<{entity.EntityName}Dto>",
+				$"Prepare{entity.EntityName}Dto",
+				PrepareCode,
+				Parameter);
 		}
 
 		public static Class FactoriyGenerate(this Entity entity, ref Project proj)
