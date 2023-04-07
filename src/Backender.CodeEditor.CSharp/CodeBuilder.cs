@@ -44,7 +44,11 @@ namespace Backender.CodeEditor.CSharp
             var _class = (Class)project.CsFiles.FirstOrDefault(p => p.Name == className && p is Class);
             return _class;
         }
-        public static Class AddClass(this Project project, Class _class)
+		public static bool IsClassExist(this Project project, string className)
+		{
+			return project.CsFiles.Any(p => p.Name == className && p is Class);
+		}
+		public static Class AddClass(this Project project, Class _class)
         {
             project.CsFiles.Add(_class);
             return _class;

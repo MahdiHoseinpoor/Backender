@@ -77,6 +77,7 @@ namespace Backender.CodeGenerator
 			if (!CsFileSources.Any(p => p.Name == "BaseEntity"))
 			{
 				CsFileSources.Add(sourceGenerator.AddBaseEntity(solution.GetProjectByName(solution.Name + ".Core")));
+				CsFileSources.Add(sourceGenerator.AddBaseDto(solution.GetProjectByName(solution.Name + ".Core")));
 			}
 			CsFileSources.AddRange(sourceGenerator.AddBaseRepo(solution.GetProjectByName(solution.Name+".Data")));
 
