@@ -94,15 +94,32 @@ namespace Backender.CodeGenerator.Patterns.Repo
 			var DtoClass = coreProj.GetClassByName(entity.EntityName + "Dto");
 
 			var DtoClassValues = new List<string>();
+			var DtoDtosProperties = new List<Property>();
 			foreach (var dtoProperty in DtoClass.InnerItems.OfType<Property>())
 			{
-				var a = dtoProperty.Name.ToSingular();
-				if (coreProj.IsClassExist(dtoProperty.DataType) || coreProj.IsClassExist(dtoProperty.Name.ToSingular())) continue;
+				if (coreProj.IsClassExist(dtoProperty.DataType)) {
+					DtoDtosProperties.Add(dtoProperty);
+					continue; 
+				}
 				DtoClassValues.Add($"{dtoProperty.Name} = {Parameter.Name}.{dtoProperty.Name}");
 			}
 			var PrepareCode = $"var {entity.EntityName.ToLower()}Dto = new {DtoClass.Name}()\n" +
-			"{\n" + string.Join(",\n", DtoClassValues) + $"\n}}; \n return {entity.EntityName.ToLower()}Dto;";
-
+			"{\n" + string.Join(",\n", DtoClassValues) + $"\n}};\n";
+			foreach (var DtoDtosProperty in DtoDtosProperties)
+			{
+				var entityName = DtoDtosProperty.Name.Substring(0, DtoDtosProperty.Name.Length-3);
+				var idParameter = "";
+				if (entityName == Parameter.DataType)
+				{
+					idParameter = $"{Parameter.Name}.Id";
+				}
+				else
+				{
+					idParameter = $"{Parameter.Name}.{entityName}Id";
+				}
+				PrepareCode += $"\n{entity.EntityName.ToLower()}Dto.{entityName} = Prepare{entityName}Dto(_{entityName.ToLower()}Service.Get{entityName}ById({idParameter}));";
+			}
+			PrepareCode += $"\nreturn {entity.EntityName.ToLower()}Dto;";
 			entityFactory.AddMethod(entity.EntityName + "Dto",
 				$"Prepare{entity.EntityName}Dto",
 				PrepareCode,
