@@ -100,5 +100,55 @@ namespace Backender.CodeGenerator.Patterns.Repo
             SourceFile.Path= GetFilePath(coreProj, Class.NameSpace);
             return SourceFile;
         }
-    }
+		public SourceFile AddBaseDto(Project coreProj)
+		{
+			var usings = new List<string>();
+
+			var SourceFile = new SourceFile();
+
+			var Class = new Class()
+			{
+				Name = "BaseDto",
+				NameSpace = coreProj.DefaultNameSpace,
+				AccessModifier = AccessModifier.Public,
+				IsStatic = false,
+				ProjectName = coreProj.Name,
+				InnerItems = new List<InnerCsFileItem>()
+			};
+			var BaseEntityProperties = new List<Property>
+			{
+				new Property()
+				{
+					AccessModifier = AccessModifier.Public,
+					DataType = "string",
+					Name = "Id",
+					ClassName = Class.Name
+
+				},
+
+				new Property()
+				{
+					AccessModifier = AccessModifier.Public,
+					DataType = "DateTime",
+					Name = "CreatedAt_",
+					ClassName = Class.Name
+				},
+				new Property()
+				{
+					AccessModifier = AccessModifier.Public,
+					DataType = "DateTime",
+					Name = "ModifiedAt_",
+					ClassName = Class.Name
+				}
+			};
+			Class.InnerItems.AddRange(BaseEntityProperties);
+
+			SourceFile.Name = "BaseDto";
+			SourceFile.SourceCode = ClassToSource(Class).SourceCode;
+			SourceFile.ProjectName = coreProj.Name;
+			SourceFile.Path = GetFilePath(coreProj, Class.NameSpace);
+			return SourceFile;
+		}
+
+	}
 }

@@ -21,7 +21,20 @@ namespace Backender.CodeGenerator
             }
             return word;
         }
-        public static string FirstCharToUpper(this string input) =>
+		public static string ToSingular(this string word)
+		{
+			if (word.EndsWith("ses") && word.Length>3)
+			{
+				word = word.Substring(0, word.Length-3);
+			}
+			else if(word.EndsWith("s") && !word.EndsWith("es"))
+			{
+				word = word.Substring(0, word.Length - 1);
+			}
+			return word;
+		}
+
+		public static string FirstCharToUpper(this string input) =>
         input switch
         {
             null => throw new ArgumentNullException(nameof(input)),
