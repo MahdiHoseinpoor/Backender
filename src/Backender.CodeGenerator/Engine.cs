@@ -145,9 +145,9 @@ namespace Backender.CodeGenerator
 					}
 				}
 			}
+			await CreateSourceFiles(savePath, solution, CsFileSources);
 			await cmd.WaitForExitAsync();
 
-			await CreateSourceFiles(savePath, solution, CsFileSources);
         }
 		public static void Log(string content, ConsoleColor consoleColor=ConsoleColor.White)
 		{

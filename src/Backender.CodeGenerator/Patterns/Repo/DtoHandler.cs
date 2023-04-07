@@ -39,10 +39,11 @@ namespace Backender.CodeGenerator.Patterns.Repo
 				switch (Realation.RealationShipType)
 				{
 					case "M2M":
-					
+						class2.AddProperty($"List<{Realation.Entity1}>", Realation.Entity1 + "Dtos", AccessModifier.Public);
 						break;
 					case "O2M":
 						class2.AddProperty(Realation.Entity1 + "Dto", Realation.Entity1 + "Dto", AccessModifier.Public);
+						class1.AddProperty($"List<{Realation.Entity2}>", Realation.Entity2 + "Dtos", AccessModifier.Public);
 						break;
 					case "O2O":
 
