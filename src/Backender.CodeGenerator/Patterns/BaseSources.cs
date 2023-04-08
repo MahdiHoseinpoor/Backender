@@ -40,7 +40,7 @@ namespace $NameSpace$
 {
       $InnerCode$
 }";
-        public static string PropertySource = @"$AccessModifier$ $Modifiers$ $DataType$ $Name$ { get; set; }";
+        public static string PropertySource = @"$AccessModifier$ $Modifiers$ $DataType$ $Name$ { get$GetInnerCode$ set$SetInnerCode$ }";
         public static string FieldSource = @"$AccessModifier$ $Modifiers$ $DataType$ $Name$ $DefaultValue$;";
 
         public static string RepoSource = @"$Usings$
@@ -178,6 +178,33 @@ namespace $NameSpace$
         public bool Save();
     }
 }";
+		public static string UnitOfWorkSource = @"//This Class Is Auto Generated with Backender, For get more Information check https://github.com/MahdiHoseinpoor/Backender
+$Usings$
+namespace $NameSpace$
+{
+    $AccessModifier$ class $ClassName$
+    {
+        $InnerObjects$
 
+		public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (_context != null)
+                {
+                    _context.Dispose();
+                    _context = null;
+                }
+            }
+        }
     }
+}";
+
+	}
 }

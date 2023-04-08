@@ -75,6 +75,7 @@ namespace Backender.CodeGenerator.Patterns.Repo
 			CoreProj.AddRealations(ref realations);
 			CoreProj.AddDtoRealations(ref realations);
 			_config.Domains.Entites.FactoriesGenerate(ref ServicesProj,CoreProj);
+			_config.Domains.Entites.UnitOfWorkGenerate(ref ServicesProj);
 
             CoreProj.AddMiddleClassesRealations(realations);
             foreach (var Relation_M2M in _config.Domains.RealationShips.Where(p => p.RealationShipType == "M2M"))
@@ -87,7 +88,6 @@ namespace Backender.CodeGenerator.Patterns.Repo
 			{
 				DbContextClass.UsingNameSpaces.Add(EntityNameSpace);
 			}
-
 			return solution;
         }
       

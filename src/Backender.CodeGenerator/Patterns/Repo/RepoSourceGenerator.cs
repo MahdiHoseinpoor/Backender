@@ -150,5 +150,23 @@ namespace Backender.CodeGenerator.Patterns.Repo
 			return SourceFile;
 		}
 
+		public SourceFile AddUnitOfWork(Project serviceProj)
+		{
+			var SourceFile = new SourceFile();
+			var unitofworkClass=serviceProj.GetClassByName("UnitOfWork");
+			if (unitofworkClass != null)
+			{
+				SourceFile.Name = "UnitOfWork";
+				SourceFile.SourceCode = ClassToSource(unitofworkClass,BaseSources.UnitOfWorkSource).SourceCode;
+				SourceFile.ProjectName = serviceProj.Name;
+				SourceFile.Path = GetFilePath(serviceProj, unitofworkClass.NameSpace);
+			}
+			else
+			{
+				throw new Exception("there is not UnitOfWork!");
+			}
+			return SourceFile;
+		}
+
 	}
 }

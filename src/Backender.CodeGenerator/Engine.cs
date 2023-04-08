@@ -80,6 +80,7 @@ namespace Backender.CodeGenerator
 				CsFileSources.Add(sourceGenerator.AddBaseDto(solution.GetProjectByName(solution.Name + ".Core")));
 			}
 			CsFileSources.AddRange(sourceGenerator.AddBaseRepo(solution.GetProjectByName(solution.Name+".Data")));
+			CsFileSources.Add(sourceGenerator.AddUnitOfWork(solution.GetProjectByName(solution.Name + ".Services")));
 
 
             using (StreamWriter sw = cmd.StandardInput)
@@ -130,6 +131,7 @@ namespace Backender.CodeGenerator
                             var CsFileSource = new SourceFile();
                             if (csFile is Class @class)
                             {
+								if (csFile.Options !=null) if (csFile.Options.Any(p=>p == "-gignore")) continue;
                                 CsFileSource = sourceGenerator.ClassToSource(@class);
                             }
                             else if (csFile is Interface @interface)

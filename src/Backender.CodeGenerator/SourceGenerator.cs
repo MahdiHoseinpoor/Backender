@@ -18,10 +18,13 @@ namespace Backender.CodeGenerator
 		{
 		}
 
-		public SourceFile ClassToSource(Class _class)
+		public SourceFile ClassToSource(Class _class,string source = "")
 		{
 			var SourceFile = new SourceFile();
-			var source = BaseSources.ClassSource;
+			if (string.IsNullOrEmpty(source))
+			{
+				source = BaseSources.ClassSource;
+			}
 			if (string.IsNullOrEmpty(_class.BaseClassName))
 			{
 				source = source.Replace("$ClassName$", _class.Name);
@@ -245,10 +248,14 @@ namespace Backender.CodeGenerator
 			var source = string.Join('\n', attributesInSource)+ "\n" +BaseSources.PropertySource;
 			source = SetAccessModifier(source, property.AccessModifier);
 			var Modifiers = "";
-			if (property.IsVirtual)
-			{
-				Modifiers = "virtual";
-			}
+			if (property.IsVirtual) Modifiers = "virtual";
+
+			if (!string.IsNullOrEmpty(property.GetInnerCode)) source = source.Replace("$GetInnerCode$", "\n{\n" + property.GetInnerCode + "\n}\n");
+			else source = source.Replace("$GetInnerCode$", ";");	
+
+			if (!string.IsNullOrEmpty(property.SetInnerCode)) source = source.Replace("$SetInnerCode$", "\n{\n" + property.SetInnerCode + "\n}\n");
+			else source = source.Replace("$SetInnerCode$", ";");
+
 			source = source.Replace("$Modifiers$", Modifiers);
 			source = source.Replace("$DataType$", property.DataType);
 			source = source.Replace("$Name$", property.Name);
