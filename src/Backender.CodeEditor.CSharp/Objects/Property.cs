@@ -13,6 +13,8 @@ namespace Backender.CodeEditor.CSharp.Objects
     {
 		public List<Attribute> Attributes { get; set; } = new List<Attribute>();
         public bool IsVirtual { get; set; }
-        public string DataType { get; set; }    
-    }
+        public string DataType { get; set; }
+		public string GetInnerCode { get; set; } = string.Empty;  
+        public string SetInnerCode { get; set; } = string.Empty;
+	}
 }

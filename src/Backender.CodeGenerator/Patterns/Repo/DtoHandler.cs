@@ -125,7 +125,7 @@ namespace Backender.CodeGenerator.Patterns.Repo
 				PrepareCode,
 				Parameter);
 		}
-			private static void AddPrepareMethodOverLoad(Class entityFactory, Entity entity, Project coreProj)
+		private static void AddPrepareMethodOverLoad(Class entityFactory, Entity entity, Project coreProj)
 		{
 			var Parameter = new MethodParameter()
 			{
@@ -144,7 +144,6 @@ namespace Backender.CodeGenerator.Patterns.Repo
 				PrepareCode,
 				Parameter);
 		}
-
 		public static Class FactoriyGenerate(this Entity entity, ref Project proj)
 		{
 			throw new NotImplementedException();

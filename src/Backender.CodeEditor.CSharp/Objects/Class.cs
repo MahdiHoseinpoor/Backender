@@ -13,6 +13,5 @@ namespace Backender.CodeEditor.CSharp.Objects
         public string BaseClassName { get; set; }
         public bool IsStatic { get; set; }
         public List<Attribute> Attributes { get; set; } = new List<Attribute>();
-
-    }
+	}
 }
