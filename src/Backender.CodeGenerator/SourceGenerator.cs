@@ -250,11 +250,11 @@ namespace Backender.CodeGenerator
 			var Modifiers = "";
 			if (property.IsVirtual) Modifiers = "virtual";
 
-			if (!string.IsNullOrEmpty(property.GetInnerCode)) source = source.Replace("$GetInnerCode$", "\n{\n" + property.GetInnerCode + "\n}\n");
-			else source = source.Replace("$GetInnerCode$", ";");	
+			if (!string.IsNullOrEmpty(property.GetInnerCode)) source = source.Replace("$Get$", "\n{\nget\n{\n" + property.GetInnerCode + "\n}\n");
+			else source = source.Replace("$Get$", "{ get;");	
 
-			if (!string.IsNullOrEmpty(property.SetInnerCode)) source = source.Replace("$SetInnerCode$", "\n{\n" + property.SetInnerCode + "\n}\n");
-			else source = source.Replace("$SetInnerCode$", ";");
+			if (!string.IsNullOrEmpty(property.SetInnerCode)) source = source.Replace("$Set$", "\n{\nset\n{\n" + property.SetInnerCode + "\n}\n}\n");
+			else source = source.Replace("$Set$", "set; }");
 
 			source = source.Replace("$Modifiers$", Modifiers);
 			source = source.Replace("$DataType$", property.DataType);

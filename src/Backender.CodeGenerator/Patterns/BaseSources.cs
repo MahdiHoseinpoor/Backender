@@ -40,7 +40,7 @@ namespace $NameSpace$
 {
       $InnerCode$
 }";
-        public static string PropertySource = @"$AccessModifier$ $Modifiers$ $DataType$ $Name$ { get$GetInnerCode$ set$SetInnerCode$ }";
+        public static string PropertySource = @"$AccessModifier$ $Modifiers$ $DataType$ $Name$ $Get$ $Set$";
         public static string FieldSource = @"$AccessModifier$ $Modifiers$ $DataType$ $Name$ $DefaultValue$;";
 
         public static string RepoSource = @"$Usings$
