@@ -47,8 +47,7 @@ namespace Backender.Translator
     public class Config
     {
 		public string Version { get; set; } = "net7.0";
-		public string SavePath { get; set; } = System.IO.Path.Combine(Environment.GetFolderPath(
-	Environment.SpecialFolder.MyDoc‌​uments), "Backender 2023", "sources");
+		public string SavePath { get; set; }
         public string SolutionName { get; set; }
 		public string SoltionNameSpace { get; set; }
 

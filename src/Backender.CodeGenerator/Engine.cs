@@ -13,31 +13,17 @@ namespace Backender.CodeGenerator
     public class Engine
     {
 		string _savePath;
-		public string FileName { get; set; }
 		public string SavePath { get { return _savePath; } }
-		public Engine(string fileName)
-		{
-			FileName = fileName;
-		}
 		public Engine()
 		{
 
 		}
-		public async Task Run()
+		public async Task Run(Config config)
 		{
-			var configFile = await File.ReadAllTextAsync(FileName);
-			var config = new Config();
-			if (Path.GetExtension(FileName).ToLower() == ".json")
+			if (string.IsNullOrEmpty(config.SavePath))
 			{
-				config = JsonSerializer.Deserialize<Config>(configFile);
-			}
-			if (Path.GetExtension(FileName).ToLower() == ".yaml")
-			{
-				config = YamlSerializer.Deserialize<Config>(configFile);
-			}
-			else if(Path.GetExtension(FileName).ToLower() == ".palino")
-			{
-				config = PalinoSerializer.Deserialize(configFile);
+				config.SavePath=System.IO.Path.Combine(Environment.GetFolderPath(
+	Environment.SpecialFolder.MyDoc‌​uments), "Backender 2023", "sources");
 			}
 			_savePath = Path.Combine(config.SavePath, config.SolutionName);
 			RepoPatternGenerator generator = new(config);
