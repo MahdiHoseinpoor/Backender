@@ -71,7 +71,7 @@ namespace Backender.CodeGenerator.Patterns.Repo
         {
             var parameters = new List<MethodParameter>();
             var innerCode = "";
-            var fieldsObject = entityService.InnerItems.OfType<Field>();
+            var fieldsObject = entityService.InnerItems.OfType<Field>().Where(p=>p.AllowAutoImplement);
             foreach (var fieldObject in fieldsObject)
             {
                 var field = fieldObject;
