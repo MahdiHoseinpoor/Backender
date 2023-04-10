@@ -31,7 +31,7 @@ namespace Backender.CodeGenerator
 			}
 			else
 			{
-				source = source.Replace("$ClassName$", _class.Name + ":" + _class.BaseClassName);
+				source = source.Replace("$ClassName$", _class.Name + " : " + _class.BaseClassName);
 			}
 			source = SetNameSpace(source, _class.NameSpace);
 			source = SetAccessModifier(source, _class.AccessModifier);

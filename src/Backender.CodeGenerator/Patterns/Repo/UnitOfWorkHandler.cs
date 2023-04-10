@@ -11,7 +11,7 @@ namespace Backender.CodeGenerator.Patterns.Repo
 {
 	public static class UnitOfWorkHandler
 	{
-		public static Class UnitOfWorkGenerate(this List<Entity> entities, ref Project proj, List<string> options = null)
+		public static Class UnitOfWorkGenerate(this List<Entity> entities, ref Project proj, Project coreProj, List<string> options = null)
 		{
 
 			if (options == null)
@@ -23,15 +23,21 @@ namespace Backender.CodeGenerator.Patterns.Repo
 			var unitofwork = proj.AddClass("UnitOfWork", baseClassName: "IDisposable", Options: options);
 
 			unitofwork.AddServices(proj);
-			unitofwork.AddRepos(entities);
+			unitofwork.AddRepos(coreProj);
 			unitofwork.AddFactories(proj);
 			unitofwork.AutoImplementFields();
+			unitofwork.UsingNameSpaces.Add("Microsoft.EntityFrameworkCore");
+			unitofwork.UsingNameSpaces.AddRange(proj.ProjectReference.Select(p=>p.DefaultNameSpace));
+
 			return unitofwork;
 		}
 		private static void AddServices(this Class _class, Project proj)
 		{
 			foreach (var ServiceClass in proj.CsFiles.OfType<Class>().Where(p => p.Name.EndsWith("Service")))
 			{
+				if (!_class.UsingNameSpaces.Any(p => p == ServiceClass.NameSpace))
+					_class.UsingNameSpaces.Add(ServiceClass.NameSpace);
+
 				var serviceFieldName = $"_{ServiceClass.Name.ToLower()}";
 				_class.AddField(ServiceClass.Name, serviceFieldName, false, AccessModifier.Private);
 				var ServicesParameters = ServiceClass.InnerItems.OfType<Constructor>().Select(p => p.Parameters);
@@ -51,27 +57,35 @@ namespace Backender.CodeGenerator.Patterns.Repo
 				_class.AddProperty(ServiceClass.Name, ServiceClass.Name, getInnerCode: GetInnerCode);
 			}
 		}
-		private static void AddRepos(this Class _class, List<Entity> entities)
+		private static void AddRepos(this Class _class, Project coreProj)
 		{
 			var dbContextField = _class.AddField("ApplicationDbContext", "_context", accessModifier: AccessModifier.Private);
-
-			foreach (var entity in entities)
+		
+			foreach (var entityClass in coreProj.CsFiles.OfType<Class>().Where(p => p.Options.Any(p=>p == "EntityClass")))
 			{
-				var repoFieldName = $"_{entity.EntityName.ToLower()}Repo";
-				_class.AddField($"Repo<{entity.EntityName}>", repoFieldName, false, AccessModifier.Private);
+
+				if (!_class.UsingNameSpaces.Any(p => p == entityClass.NameSpace))
+					_class.UsingNameSpaces.Add(entityClass.NameSpace);
+
+				var repoFieldName = $"_{entityClass.Name.ToLower()}Repo";
+				_class.AddField($"Repo<{entityClass.Name}>", repoFieldName, false, AccessModifier.Private);
+
 
 				string GetInnerCode = $"if ({repoFieldName} == null)\n" +
 					"{\n" +
-					$"{repoFieldName} = new Repo<{entity.EntityName}>({dbContextField.Name});\n" +
+					$"{repoFieldName} = new Repo<{entityClass.Name}>({dbContextField.Name});\n" +
 					"}\n" +
 					$"return {repoFieldName};";
-				_class.AddProperty($"Repo<{entity.EntityName}>", entity.EntityName + "Repo", getInnerCode: GetInnerCode);
+				_class.AddProperty($"Repo<{entityClass.Name}>", entityClass.Name + "Repo", getInnerCode: GetInnerCode);
 			}
 		}
 		private static void AddFactories(this Class _class, Project proj)
 		{
 			foreach (var FactoryClass in proj.CsFiles.OfType<Class>().Where(p => p.Name.EndsWith("DtosFactory")).DistinctBy(p=>p.Name))
 			{
+				if (!_class.UsingNameSpaces.Any(p=>p == FactoryClass.NameSpace))
+					_class.UsingNameSpaces.Add(FactoryClass.NameSpace);
+
 				var factoryFieldName = $"_{FactoryClass.Name.ToLower()}";
 				_class.AddField(FactoryClass.Name, factoryFieldName, false, AccessModifier.Private);
 				var FactoriesParameters = FactoryClass.InnerItems.OfType<Constructor>().Select(p => p.Parameters);
