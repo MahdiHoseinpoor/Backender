@@ -4,6 +4,7 @@ using Backender.CodeGenerator.Patterns.Repo;
 using Backender.Translator;
 using System;
 using System.Diagnostics;
+using System.Security.Claims;
 using System.Text.Json;
 using System.Xml.Linq;
 using Enum = Backender.CodeEditor.CSharp.Objects.Enum;
@@ -47,7 +48,7 @@ namespace Backender.CodeGenerator
         public static async Task Build(Solution solution)
         {
             RepoSourceGenerator sourceGenerator = new ();
-            var CsFileSources = new List<SourceFile>();
+            var FileSources = new List<SourceFile>();
 			string savePath = solution.SavePath;
 
 			Process cmd = new ();
@@ -56,17 +57,17 @@ namespace Backender.CodeGenerator
             cmd.StartInfo.UseShellExecute = false;
 #if DEBUG
 #else	
-			cmd.StartInfo.CreateNoWindow = true;
+			//cmd.StartInfo.CreateNoWindow = true;
 #endif
 			cmd.Start();
 
-			if (!CsFileSources.Any(p => p.Name == "BaseEntity"))
+			if (!FileSources.Any(p => p.Name == "BaseEntity"))
 			{
-				CsFileSources.Add(sourceGenerator.AddBaseEntity(solution.GetProjectByName(solution.Name + ".Core")));
-				CsFileSources.Add(sourceGenerator.AddBaseDto(solution.GetProjectByName(solution.Name + ".Core")));
+				FileSources.Add(sourceGenerator.AddBaseEntity(solution.GetProjectByName(solution.Name + ".Core")));
+				FileSources.Add(sourceGenerator.AddBaseDto(solution.GetProjectByName(solution.Name + ".Core")));
 			}
-			CsFileSources.AddRange(sourceGenerator.AddBaseRepo(solution.GetProjectByName(solution.Name+".Data")));
-			CsFileSources.Add(sourceGenerator.AddUnitOfWork(solution.GetProjectByName(solution.Name + ".Services")));
+			FileSources.AddRange(sourceGenerator.AddBaseRepo(solution.GetProjectByName(solution.Name+".Data")));
+			FileSources.Add(sourceGenerator.AddUnitOfWork(solution.GetProjectByName(solution.Name + ".Services")));
 
 
             using (StreamWriter sw = cmd.StandardInput)
@@ -90,21 +91,11 @@ namespace Backender.CodeGenerator
 					}
 					foreach (var project in solution.Projects)
                     {
-                        if (!Directory.Exists(Path.Combine(savePath, solution.Name , project.Name)))
-                        {
-                            Directory.CreateDirectory(Path.Combine(savePath, solution.Name,project.Name));
-                        }
-						if (!File.Exists(Path.Combine(savePath, solution.Name, project.Name , $"{project.Name}.csproj")))
-						{
-							sw.WriteLine($"dotnet new classlib -n {project.Name} -f net7.0");
-							sw.WriteLine($"del {project.Name}\\Class1.cs");
-						}
-						else
-						{
-							Log($"a Project named '{project.Name}' is existing", ConsoleColor.Yellow);
-						}
+						var CsprojSource = sourceGenerator.ProjectToCsproj(@class);
+						CsprojSource.Path = sourceGenerator.GetFilePath(project, csFile.NameSpace);
+						FileSources.Add(CsFileSource);
 						sw.WriteLine($"dotnet sln add {project.Name}");
-                        sw.WriteLine($"dotnet add {project.Name} package Microsoft.EntityFrameworkCore.SqlServer");
+                        //sw.WriteLine($"dotnet add {project.Name} package Microsoft.EntityFrameworkCore.SqlServer");
                     }
                     foreach (var project in solution.Projects)
                     {
@@ -129,19 +120,19 @@ namespace Backender.CodeGenerator
 								CsFileSource = (sourceGenerator.EnumToSource(@enum));
 							}
 							CsFileSource.Path = sourceGenerator.GetFilePath(project, csFile.NameSpace);
-                            CsFileSources.Add(CsFileSource);
+							FileSources.Add(CsFileSource);
                         }
 					}
 				}
 			}
-			await CreateSourceFiles(savePath, solution, CsFileSources);
+			await CreateSourceFiles(savePath, solution, FileSources);
 			await cmd.WaitForExitAsync();
 
         }
 		public static void Log(string content, ConsoleColor consoleColor=ConsoleColor.White)
 		{
 			Console.ForegroundColor = consoleColor;
-			Console.WriteLine($"------ [{DateTime.Now}] : {content}\n");
+			Console.WriteLine($"	--- [{DateTime.Now}] : {content}\n");
 		}
 	}
 }

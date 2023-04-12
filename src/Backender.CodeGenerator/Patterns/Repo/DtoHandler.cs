@@ -13,13 +13,20 @@ namespace Backender.CodeGenerator.Patterns.Repo
 	{
 		public static Class DtoGenerate(this Entity entity, ref Project proj, List<string> Options = null)
 		{
+			var AppendNameSpace = "Dtos";
+
+			if (!string.IsNullOrEmpty(entity.EntityCategory))
+			{
+				AppendNameSpace += "." + entity.EntityCategory;
+			}
+
 			var options = new List<string>();
 			options.Add("DtoClass");
 			if (Options != null)
 			{
 				options.AddRange(Options);
 			}
-			var entityClass = proj.AddClass(entity.EntityName + "Dto", baseClassName: "BaseDto", Options: options, AppendNameSpace: "Dto");
+			var entityClass = proj.AddClass(entity.EntityName + "Dto", baseClassName: "BaseDto", Options: options, AppendNameSpace: AppendNameSpace);
 			foreach (var Col in entity.Cols)
 			{
 				entityClass.AddProperty(Col.ColType, Col.ColName, AccessModifier.Public);
@@ -67,9 +74,11 @@ namespace Backender.CodeGenerator.Patterns.Repo
 				if (!FactoryClasses.Any(p => p.Name == entityFactoryClassName))
 				{
 					entityFactory = proj.AddClass(entityFactoryClassName, AppendNameSpace: entity.EntityCategory);
+					entityFactory.UsingNameSpaces.Add(proj.SolutionName + ".Core.Dtos");
 					entityFactory.UsingNameSpaces.Add(proj.SolutionName + ".Core.Domains");
 					if (!string.IsNullOrEmpty(entity.EntityCategory))
 					{
+						entityFactory.UsingNameSpaces.Add(proj.SolutionName + ".Core.Dtos." + entity.EntityCategory);
 						entityFactory.UsingNameSpaces.Add(proj.SolutionName + ".Core.Domains." + entity.EntityCategory);
 					}
 				}
@@ -136,7 +145,7 @@ namespace Backender.CodeGenerator.Patterns.Repo
 			var PrepareCode = $"var {entity.EntityName.ToLower()}Dtos = new List<{entity.EntityName}Dto>();\n" +
 				$"foreach (var {entity.EntityName.ToLower()} in {Parameter.Name})\n" +
 				$"{{\n" +
-				$"{entity.EntityName.ToLower()}Dtos.Add(Prepare{entity.EntityName}Dto(entity.EntityName.ToLower()));\n" +
+				$"{entity.EntityName.ToLower()}Dtos.Add(Prepare{entity.EntityName}Dto({entity.EntityName.ToLower()}));\n" +
 				$"}}\n" +
 				$"return {entity.EntityName.ToLower()}Dtos;";
 			entityFactory.AddMethod($"List<{entity.EntityName}Dto>",

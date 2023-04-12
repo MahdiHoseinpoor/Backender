@@ -8,10 +8,10 @@ using System;
 
 namespace Backender.ConsoleApp
 {
-    internal class Program
-    {
-        static async Task Main(string[] args)
-        {
+	internal class Program
+	{
+		static async Task Main(string[] args)
+		{
 			string FileName = "";
 			Engine app = new();
 
@@ -19,7 +19,7 @@ namespace Backender.ConsoleApp
 			while (true)
 			{
 #if DEBUG
-			FileName = "G:\\shoping site.yaml";
+				FileName = "G:\\shoping site.yaml";
 #else
 
 				FileName = ReadLine("Enter your Configuration File Location",ConsoleColor.White)!.Trim();
@@ -36,7 +36,7 @@ namespace Backender.ConsoleApp
 						WriteMessage($"	ErrorCode | Description\n", ConsoleColor.White);
 						foreach (var message in messages)
 						{
-							ConsoleColor consoleColor= ConsoleColor.White;
+							ConsoleColor consoleColor = ConsoleColor.White;
 							switch (message.MessageType)
 							{
 								case MessageType.Error:
@@ -53,13 +53,13 @@ namespace Backender.ConsoleApp
 							}
 							WriteMessage($"	{message.Code} | {message.Description}\n", consoleColor);
 						}
-						if (messages.Any(p=>p.MessageType==MessageType.Error))
+						if (messages.Any(p => p.MessageType == MessageType.Error))
 						{
 #if DEBUG
 							Console.ReadKey();
 							Environment.Exit(0);
 #else
-						continue;
+							continue;
 #endif
 						}
 
@@ -79,7 +79,7 @@ namespace Backender.ConsoleApp
 				{
 					WriteMessage($"	I can not found Config file in '{FileName}'", ConsoleColor.Red);
 				}
-				
+
 			}
 
 			//app.Run("G:\\Shopping Site.json", "G:\\NewShoppingSite");
