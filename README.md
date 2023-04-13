@@ -21,7 +21,7 @@ Backender is an open source project in C# language that uses a config file to cr
 2. Create or edit config file
 3. the command line executes the Backender command.
     - Backender
-    - wait for prompt to enter the configuration file path (optional: Backender.yml file in the default program root directory)
+    - wait for prompt to enter the configuration file path
     - carriage return execution command
 4. wait for the end of the task execution.
 5. View output directory results
