@@ -20,12 +20,9 @@ namespace Backender.ConsoleApp
 			WriteMessage("===================== Welcome to Backender! =====================\n\n", ConsoleColor.Blue);
 			while (true)
 			{
-#if DEBUG
-				FileName = "G:\\GoBlog.yaml";
-#else
+
 
 				FileName = ReadLine("Enter your Configuration File Location",ConsoleColor.White)!.Trim();
-#endif
 
 
 				if (File.Exists(FileName))
