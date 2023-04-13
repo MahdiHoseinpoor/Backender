@@ -2,8 +2,9 @@
 using GoBlog.Core;
 using GoBlog.Data;
 using GoBlog.Core.Domains;
+using GoBlog.Core.Domains.Catalog;
 using Microsoft.EntityFrameworkCore;
-namespace GoBlog.Services
+namespace GoBlog.Services.Catalog
 {
     public class CommentService
     {

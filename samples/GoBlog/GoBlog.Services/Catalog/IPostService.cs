@@ -2,8 +2,9 @@
 using GoBlog.Core;
 using GoBlog.Data;
 using GoBlog.Core.Domains;
+using GoBlog.Core.Domains.Catalog;
 using Microsoft.EntityFrameworkCore;
-namespace GoBlog.Services
+namespace GoBlog.Services.Catalog
 {
     public interface IPostService
     {
@@ -13,7 +14,6 @@ namespace GoBlog.Services
         public bool UpdatePost(Post post);
         public bool DeletePost(Post post);
         public bool DeletePost(string id);
-        public Post GetPostByAuthor(string author);
         public List<Post> GetPostsByCategory(string categoryId);
         public Post GetPostByAuthor(string author);
     }

@@ -2,8 +2,9 @@
 using GoBlog.Core;
 using GoBlog.Data;
 using GoBlog.Core.Domains;
+using GoBlog.Core.Domains.Catalog;
 using Microsoft.EntityFrameworkCore;
-namespace GoBlog.Services
+namespace GoBlog.Services.Catalog
 {
     public class PostService
     {
@@ -39,10 +40,6 @@ namespace GoBlog.Services
         {
             _postRepo.Delete(id);
             return _postRepo.Save();
-        }
-        public Post GetPostByAuthor(string author)
-        {
-            return _postRepo.GetAll(where: p => p.Author == author).FirstOrDefault();
         }
         public List<Post> GetPostsByCategory(string categoryId)
         {

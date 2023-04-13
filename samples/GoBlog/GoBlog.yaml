@@ -3,6 +3,7 @@ SoltionNameSpace: GoBlog
 Domains:
   Entites:
   - EntityName: Post
+    EntityCategory: Catalog
     Cols:
     - ColName: Title
       ColType: string
@@ -13,6 +14,7 @@ Domains:
     - ColName: Content
       ColType: string
   - EntityName: Comment
+    EntityCategory: Catalog
     Cols:
     - ColName: Content
       ColType: string
@@ -26,6 +28,7 @@ Domains:
     - ColName: Email
       ColType: string
   - EntityName: Category
+    EntityCategory: Catalog
     Cols:
     - ColName: Title
       ColType: string

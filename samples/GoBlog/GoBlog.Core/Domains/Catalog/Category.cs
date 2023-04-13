@@ -1,8 +1,9 @@
 //This Class Is Auto Generated with Backender, For get more Information check https://github.com/MahdiHoseinpoor/Backender
+using GoBlog.Core.Enums;
 using System.ComponentModel.DataAnnotations;
-namespace GoBlog.Core.Domains
+namespace GoBlog.Core.Domains.Catalog
 {
-    public class Category:BaseEntity
+    public class Category : BaseEntity
     {
         [Required]
         public  string Title { get; set; }
