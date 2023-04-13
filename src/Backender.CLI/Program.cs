@@ -1,4 +1,4 @@
-﻿using Microsoft.CodeAnalysis.CSharp;
+﻿
 using Backender.CodeEditor.CSharp;
 using Backender.CodeGenerator;
 using System.ComponentModel;
@@ -62,13 +62,12 @@ namespace Backender.ConsoleApp
 							continue;
 #endif
 						}
-
 					}
 
-					WriteMessage($"	Backender Engine Start to Generate!");
+					WriteMessage($"\n	Backender Engine Start to Generate!");
 					await app.Run(config);
 					Console.ForegroundColor = ConsoleColor.Green;
-					Console.Write($"	Your Project Has Been Created in ");
+					Console.Write($"  Your Project Has Been Created in ");
 					Console.ForegroundColor = ConsoleColor.Yellow;
 					Console.Write(app.SavePath + "\n");
 					Console.ForegroundColor = ConsoleColor.White;

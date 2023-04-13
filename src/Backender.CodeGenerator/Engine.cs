@@ -2,9 +2,12 @@
 using Backender.CodeEditor.CSharp.Objects;
 using Backender.CodeGenerator.Patterns.Repo;
 using Backender.Translator;
+using Microsoft.Build.Evaluation;
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Text.Json;
+using System.Xml;
 using System.Xml.Linq;
 using Enum = Backender.CodeEditor.CSharp.Objects.Enum;
 
@@ -22,7 +25,7 @@ namespace Backender.CodeGenerator
 		{
 			if (string.IsNullOrEmpty(config.SavePath))
 			{
-				config.SavePath=System.IO.Path.Combine(Environment.GetFolderPath(
+				config.SavePath=Path.Combine(Environment.GetFolderPath(
 	Environment.SpecialFolder.MyDoc‌​uments), "Backender 2023", "sources");
 			}
 			_savePath = Path.Combine(config.SavePath, config.SolutionName);
@@ -40,7 +43,7 @@ namespace Backender.CodeGenerator
                     Directory.CreateDirectory(Path.Combine(savePath,solution.Name, sourceFile.Path));
                 }
                await File.WriteAllTextAsync(Path.Combine(savePath, solution.Name, sourceFile.Path, $"{sourceFile.Name}.cs"), sourceFile.SourceCode);
-			  Log($"'{sourceFile.Name}.cs' has been created", ConsoleColor.White);
+			  Log($"'{sourceFile.Name.Trim()}.cs' has been created", ConsoleColor.White);
 
 			}
 		}
@@ -54,10 +57,10 @@ namespace Backender.CodeGenerator
             cmd.StartInfo.FileName = "cmd.exe";
             cmd.StartInfo.RedirectStandardInput = true;
             cmd.StartInfo.UseShellExecute = false;
-//#if DEBUG
-//#else	
-//			cmd.StartInfo.CreateNoWindow = true;
-//#endif
+#if DEBUG
+#else
+			cmd.StartInfo.CreateNoWindow = true;
+#endif
 			cmd.Start();
 
 			if (!CsFileSources.Any(p => p.Name == "BaseEntity"))
@@ -136,12 +139,28 @@ namespace Backender.CodeGenerator
 			}
 			await cmd.WaitForExitAsync();
 			await CreateSourceFiles(savePath, solution, CsFileSources);
+			cmd.Start();
+
+			using (StreamWriter sw = cmd.StandardInput)
+			{
+				Log($"Adding EFCore Packages...");
+				sw.WriteLine($"cd /d {Path.Combine(savePath, solution.Name)}");
+				foreach (var project in solution.Projects)
+				{
+					sw.WriteLine($"dotnet add {project.Name} package Microsoft.EntityFrameworkCore.SqlServer");
+				}
+			}
+			await cmd.WaitForExitAsync();
+			Log($"Done",ConsoleColor.Blue);
 
 		}
+
+
+
 		public static void Log(string content, ConsoleColor consoleColor=ConsoleColor.White)
 		{
 			Console.ForegroundColor = consoleColor;
-			Console.WriteLine($"	--- [{DateTime.Now}] : {content}\n");
+			Console.WriteLine($"	[{DateTime.Now}] : {content}\n");
 		}
 	}
 }
