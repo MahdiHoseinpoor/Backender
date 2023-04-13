@@ -17,7 +17,7 @@
     <IncludeSymbols>False</IncludeSymbols>
     <PackageIcon>Logo.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageVersion>1.0.0</PackageVersion>
+    <PackageVersion>1.2.0</PackageVersion>
   </PropertyGroup>
 
   <ItemGroup>

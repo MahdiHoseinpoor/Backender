@@ -10,8 +10,10 @@ namespace Backender.ConsoleApp
 {
 	internal class Program
 	{
+		
 		static async Task Main(string[] args)
 		{
+			ConsoleColor DefaultBackgroundColor = Console.BackgroundColor;
 			string FileName = "";
 			Engine app = new();
 
@@ -33,7 +35,8 @@ namespace Backender.ConsoleApp
 					var messages = ConfigChecker.Run(config);
 					if (messages.Any())
 					{
-						WriteMessage($"	ErrorCode | Description\n", ConsoleColor.White);
+						Console.BackgroundColor = ConsoleColor.Black;
+						WriteMessage($"   ErrorCode | Description ", ConsoleColor.White);
 						foreach (var message in messages)
 						{
 							ConsoleColor consoleColor = ConsoleColor.White;
@@ -51,8 +54,10 @@ namespace Backender.ConsoleApp
 								default:
 									break;
 							}
-							WriteMessage($"	{message.Code} | {message.Description}\n", consoleColor);
+							WriteMessage($"	{message.Code} | {message.Description}", consoleColor);
+
 						}
+						Console.BackgroundColor = DefaultBackgroundColor;
 						if (messages.Any(p => p.MessageType == MessageType.Error))
 						{
 #if DEBUG
@@ -76,7 +81,10 @@ namespace Backender.ConsoleApp
 				}
 				else
 				{
+					Console.BackgroundColor = ConsoleColor.Black;
 					WriteMessage($"	I can not found Config file in '{FileName}'", ConsoleColor.Red);
+					Console.BackgroundColor = DefaultBackgroundColor;
+
 				}
 
 			}
