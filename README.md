@@ -11,7 +11,7 @@ Backender is an open source project in C# language that uses a config file to cr
 1. Install from .NET Core Global Tool  
 
   ``` shell
-    dotnet tool install --global Backender.CLI --version 1.2.0
+    dotnet tool install --global Backender.CLI --version 1.2.1
   ```
 
 2. Create or edit config file
