@@ -21,7 +21,7 @@ namespace Backender.ConsoleApp
 			while (true)
 			{
 #if DEBUG
-				FileName = "G:\\shoping site.yaml";
+				FileName = "G:\\GoBlog.yaml";
 #else
 
 				FileName = ReadLine("Enter your Configuration File Location",ConsoleColor.White)!.Trim();

@@ -18,7 +18,7 @@ namespace Backender.CodeGenerator
 		{
 		}
 
-		public SourceFile ClassToSource(Class _class,string source = "")
+		public SourceFile ClassToSource(Class _class, string source = "")
 		{
 			var SourceFile = new SourceFile();
 			if (string.IsNullOrEmpty(source))
@@ -40,7 +40,7 @@ namespace Backender.CodeGenerator
 			var FieldObjects = new List<string>();
 			var PropertyObjects = new List<string>();
 			var ConstructorObjects = new List<string>();
-			foreach (var classitem in _class.InnerItems)
+			foreach (var classitem in _class.InnerItems.Distinct())
 			{
 				_class.UsingNameSpaces.AddRange(classitem.RequiredNameSpaces);
 
@@ -104,7 +104,7 @@ namespace Backender.CodeGenerator
 
 			var innerObjects = new List<string>();
 			var MethodObjects = new List<string>();
-			foreach (var _InterfaceItem in _interface.InnerItems)
+			foreach (var _InterfaceItem in _interface.InnerItems.Distinct())
 			{
 				if (_InterfaceItem is Method)
 				{
@@ -129,11 +129,11 @@ namespace Backender.CodeGenerator
 			var EnumValues = new List<string>();
 			foreach (var enumValue in _enum.EnumValues)
 			{
-				
+
 				var _enumValue = enumValue.Name + " = " + enumValue.Value;
 				EnumValues.Add(_enumValue);
 			}
-			
+
 			source = source.Replace("$EnumValues$", string.Join(",\n", EnumValues));
 
 			SourceFile.Name = _enum.Name;
@@ -235,26 +235,42 @@ namespace Backender.CodeGenerator
 						var parameter = atributeParameter.Name + " = " + atributeParameter.DefaultValue;
 						Parameters.Add(parameter);
 					}
-					attributeSource +="("+ string.Join(',',Parameters)+")";
+					attributeSource += "(" + string.Join(',', Parameters) + ")";
 				}
-			    else if (!string.IsNullOrEmpty(attribute.Value))
+				else if (!string.IsNullOrEmpty(attribute.Value))
 				{
-					attributeSource +="("+ attribute.Value+ ")";
+					attributeSource += "(" + attribute.Value + ")";
 				}
 				attributeSource += "]";
 				attributesInSource.Add(attributeSource);
 			}
 
-			var source = string.Join('\n', attributesInSource)+ "\n" +BaseSources.PropertySource;
+			var source = string.Join('\n', attributesInSource) + "\n" + BaseSources.PropertySource;
 			source = SetAccessModifier(source, property.AccessModifier);
 			var Modifiers = "";
 			if (property.IsVirtual) Modifiers = "virtual";
 
-			if (!string.IsNullOrEmpty(property.GetInnerCode)) source = source.Replace("$Get$", "\n{\nget\n{\n" + property.GetInnerCode + "\n}\n");
-			else source = source.Replace("$Get$", "{ get;");	
+			if (!string.IsNullOrEmpty(property.GetInnerCode))
+			{
+				source = source.Replace("$Get$", "\n{\nget\n{\n" + property.GetInnerCode + "\n}\n");
+			}
+			else
+			{
+				source = source.Replace("$Get$", "{ get;");
+			}
 
-			if (!string.IsNullOrEmpty(property.SetInnerCode)) source = source.Replace("$Set$", "\n{\nset\n{\n" + property.SetInnerCode + "\n}\n}\n");
-			else source = source.Replace("$Set$", "set; }");
+			if (!string.IsNullOrEmpty(property.SetInnerCode))
+			{
+				source = source.Replace("$Set$", "\n{\nset\n{\n" + property.SetInnerCode + "\n}\n}\n");
+			}
+			else if(!string.IsNullOrEmpty(property.GetInnerCode))
+			{
+				source = source.Replace("$Set$", "}");
+			}
+			else
+			{
+				source = source.Replace("$Set$", "set; }");
+			}
 
 			source = source.Replace("$Modifiers$", Modifiers);
 			source = source.Replace("$DataType$", property.DataType);
@@ -327,7 +343,8 @@ namespace Backender.CodeGenerator
 			var BracketOrder = 0;
 			var SourceLines = sourceCode.Split('\n');
 			var SourceFormatedLines = new List<string>();
-			foreach (var Line in SourceLines) {
+			foreach (var Line in SourceLines)
+			{
 				var Formatedline = Line.Trim();
 
 				if (string.IsNullOrEmpty(Line) || string.IsNullOrWhiteSpace(Line)) continue;
@@ -347,7 +364,7 @@ namespace Backender.CodeGenerator
 				}
 
 			}
-			return string.Join('\n',SourceFormatedLines);
+			return string.Join('\n', SourceFormatedLines);
 		}
 
 		private bool IsThisLineProperty(string line)

@@ -82,10 +82,17 @@ namespace Backender.CodeGenerator.Patterns.Repo
 						entityFactory.UsingNameSpaces.Add(proj.SolutionName + ".Core.Domains." + entity.EntityCategory);
 					}
 				}
+				else
+				{
+					FactoryClasses.Remove(entityFactory);
+				}
 				AddPrepareMethod(entityFactory, entity, coreProj, entities);
 				AddPrepareMethodOverLoad(entityFactory, entity, coreProj);
-				AutoImplementFields(entityFactory);
 				FactoryClasses.Add(entityFactory);
+			}
+			foreach (var FactoryClass in FactoryClasses)
+			{
+				AutoImplementFields(FactoryClass);
 			}
 			foreach (var FactoryClass in FactoryClasses)
 			{
@@ -172,7 +179,7 @@ namespace Backender.CodeGenerator.Patterns.Repo
 		{
 			var parameters = new List<MethodParameter>();
 			var innerCode = "";
-			var fieldsObject = entityFactory.InnerItems.OfType<Field>().Where(p => p.AllowAutoImplement);
+			var fieldsObject = entityFactory.InnerItems.OfType<Field>().Where(p => p.AllowAutoImplement).ToList();
 			foreach (var fieldObject in fieldsObject)
 			{
 				var field = fieldObject;
