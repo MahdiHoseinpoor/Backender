@@ -82,8 +82,9 @@ namespace Backender.CodeGenerator.Patterns.Repo
 						entityFactory.UsingNameSpaces.Add(proj.SolutionName + ".Core.Domains." + entity.EntityCategory);
 					}
 				}
-				AddPrepareMethod(entityFactory, entity, coreProj);
+				AddPrepareMethod(entityFactory, entity, coreProj, entities);
 				AddPrepareMethodOverLoad(entityFactory, entity, coreProj);
+				AutoImplementFields(entityFactory);
 				FactoryClasses.Add(entityFactory);
 			}
 			foreach (var FactoryClass in FactoryClasses)
@@ -93,7 +94,7 @@ namespace Backender.CodeGenerator.Patterns.Repo
 
 			return FactoryClasses;
 		}
-		private static void AddPrepareMethod(Class entityFactory, Entity entity, Project coreProj)
+		private static void AddPrepareMethod(Class entityFactory, Entity entity, Project coreProj, List<Entity> entities)
 		{
 			var Parameter = new MethodParameter()
 			{
@@ -117,6 +118,7 @@ namespace Backender.CodeGenerator.Patterns.Repo
 			foreach (var DtoDtosProperty in DtoDtosProperties)
 			{
 				var entityName = DtoDtosProperty.Name.Substring(0, DtoDtosProperty.Name.Length-3);
+				var dtoEntity = entities.FirstOrDefault(p => p.EntityName == entityName);
 				var idParameter = "";
 				if (entityName == Parameter.DataType)
 				{
@@ -126,7 +128,15 @@ namespace Backender.CodeGenerator.Patterns.Repo
 				{
 					idParameter = $"{Parameter.Name}.{entityName}Id";
 				}
-				PrepareCode += $"\n{entity.EntityName.ToLower()}Dto.{entityName} = Prepare{entityName}Dto(_{entityName.ToLower()}Service.Get{entityName}ById({idParameter}));";
+				PrepareCode += $"\n{entity.EntityName.ToLower()}Dto.{entityName}Dto = ";
+				if (dtoEntity.EntityCategory!=entity.EntityCategory)
+				{
+					var usageFactory = entityFactory.ImplementFactory(dtoEntity.EntityCategory);
+					entityFactory.UsingNameSpaces.Add(coreProj.SolutionName + ".Services" + (string.IsNullOrEmpty(dtoEntity.EntityCategory) ? "" : $".{dtoEntity.EntityCategory}"));
+					PrepareCode += $"{usageFactory.Name}.";
+				}
+				var usageService= entityFactory.ImplementService(entityName);
+				PrepareCode += $"Prepare{entityName}Dto(_{entityName.ToLower()}Service.Get{entityName}ById({idParameter}));";
 			}
 			PrepareCode += $"\nreturn {entity.EntityName.ToLower()}Dto;";
 			entityFactory.AddMethod(entity.EntityName + "Dto",
@@ -134,6 +144,7 @@ namespace Backender.CodeGenerator.Patterns.Repo
 				PrepareCode,
 				Parameter);
 		}
+
 		private static void AddPrepareMethodOverLoad(Class entityFactory, Entity entity, Project coreProj)
 		{
 			var Parameter = new MethodParameter()
@@ -157,6 +168,43 @@ namespace Backender.CodeGenerator.Patterns.Repo
 		{
 			throw new NotImplementedException();
 		}
+		private static Class AutoImplementFields(this Class entityFactory)
+		{
+			var parameters = new List<MethodParameter>();
+			var innerCode = "";
+			var fieldsObject = entityFactory.InnerItems.OfType<Field>().Where(p => p.AllowAutoImplement);
+			foreach (var fieldObject in fieldsObject)
+			{
+				var field = fieldObject;
+				var parameter = new MethodParameter()
+				{
+					DataType = field.DataType,
+					Name = field.Name.Replace("_", "").FirstCharToUpper(),
+				};
 
+				innerCode += $"{field.Name} = {parameter.Name};\n";
+				parameters.Add(parameter);
+			}
+			entityFactory.AddConstructor(innerCode, parameters);
+			return entityFactory;
+		}
+
+		private static Field ImplementService(this Class entityFactory, string entityName)
+		{
+			var serviceField = entityFactory.AddField(entityName + "Service", $"_{entityName.ToLower()}Service");
+			return serviceField;
+		}
+		private static Field ImplementFactory(this Class entityFactory, string entityCategory)
+		{
+			if(!entityFactory.InnerItems.OfType<Field>().Any(p=>p.Name  == $"{entityCategory}DtosFactory")){
+				var factoryField = entityFactory.AddField(entityCategory + "DtosFactory", $"_{entityCategory.ToLower()}DtosFactory");
+				return factoryField;
+			}
+			else
+			{
+				return entityFactory.InnerItems.OfType<Field>().FirstOrDefault();
+			}
+			
+		}
 	}
 }
