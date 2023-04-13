@@ -76,7 +76,6 @@ namespace Backender.ConsoleApp
 					Console.ForegroundColor = ConsoleColor.Yellow;
 					Console.Write(app.SavePath + "\n");
 					Console.ForegroundColor = ConsoleColor.White;
-					Console.ReadKey();
 					Environment.Exit(0);
 				}
 				else

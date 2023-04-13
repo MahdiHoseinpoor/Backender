@@ -26,14 +26,14 @@ namespace Backender.CodeGenerator.Patterns.Repo
 			{
 				options.AddRange(Options);
 			}
-			var entityClass = proj.AddClass(entity.EntityName + "Dto", baseClassName: "BaseDto", Options: options, AppendNameSpace: AppendNameSpace);
+			var entityDto = proj.AddClass(entity.EntityName + "Dto", baseClassName: "BaseDto", Options: options, AppendNameSpace: AppendNameSpace);
 			foreach (var Col in entity.Cols)
 			{
-				entityClass.AddProperty(Col.ColType, Col.ColName, AccessModifier.Public);
+				entityDto.AddProperty(Col.ColType, Col.ColName, AccessModifier.Public);
 			}
-
+			entityDto.UsingNameSpaces.Add(proj.DefaultNameSpace+".Enums");
 			//Add Realations
-			return entityClass;
+			return entityDto;
 		}
 		public static void AddDtoRealations(this Project proj, ref List<RealationShip> realationShips)
 		{

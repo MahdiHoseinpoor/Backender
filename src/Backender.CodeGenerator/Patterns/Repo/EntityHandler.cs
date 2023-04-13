@@ -54,9 +54,9 @@ namespace Backender.CodeGenerator.Patterns.Repo
 					}
 				}
 			}
-
-            //Add Realations
-            return entityClass;
+			entityClass.UsingNameSpaces.Add(proj.DefaultNameSpace + ".Enums");
+			//Add Realations
+			return entityClass;
         }
 
 		/// <summary>
