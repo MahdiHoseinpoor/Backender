@@ -32,9 +32,12 @@ Backender is an open source project in C# language that uses a config file to cr
 ``` yaml
 SolutionName: GoBlog
 SoltionNameSpace: GoBlog
+SolutionName: GoBlog
+SoltionNameSpace: GoBlog
 Domains:
   Entites:
   - EntityName: Post
+    EntityCategory: Catalog
     Cols:
     - ColName: Title
       ColType: string
@@ -45,6 +48,7 @@ Domains:
     - ColName: Content
       ColType: string
   - EntityName: Comment
+    EntityCategory: Catalog
     Cols:
     - ColName: Content
       ColType: string
@@ -58,6 +62,7 @@ Domains:
     - ColName: Email
       ColType: string
   - EntityName: Category
+    EntityCategory: Catalog
     Cols:
     - ColName: Title
       ColType: string
