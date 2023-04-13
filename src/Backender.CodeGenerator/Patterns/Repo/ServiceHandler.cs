@@ -37,13 +37,13 @@ namespace Backender.CodeGenerator.Patterns.Repo
             var realations = realationShips.GetRealationShipsByEntity(entity);
             foreach (var EntityRealation in realations)
             {
-                entityService.AddRepoBasedOnRealationtype(EntityRealation, entity.EntityName);
-                foreach (var col in entity.Cols.Where(p => !string.IsNullOrEmpty(p.Options)))
-                {
-                    entityService.AddRepoByOptions(col, entity.EntityName);
-                }
+                entityService.AddRepoBasedOnRealationtype(EntityRealation, entity.EntityName);                
             }
-            entityService.AutoImplementFields();
+			foreach (var col in entity.Cols.Where(p => !string.IsNullOrEmpty(p.Options)))
+			{
+				entityService.AddRepoByOptions(col, entity.EntityName);
+			}
+			entityService.AutoImplementFields();
             foreach (var item in proj.ProjectReference)
             {
                 entityService.UsingNameSpaces.Add(item.DefaultNameSpace);
