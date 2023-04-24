@@ -302,6 +302,14 @@ namespace Backender.CodeGenerator
 					}
 					source = source.Replace("$Parameters$", string.Join(',', Parameters));
 				}
+				else
+				{
+					source = source.Replace("$Parameters$", "");
+				}
+			}
+			else
+			{
+				source = source.Replace("$Parameters$", "");
 			}
 			source = source.Replace("$InnerCode$", constructor.InnerCode);
 			return source;
