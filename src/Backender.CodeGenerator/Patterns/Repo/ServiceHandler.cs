@@ -15,15 +15,15 @@ namespace Backender.CodeGenerator.Patterns.Repo
 	public static class ServiceHandler
     {
 		/// <summary>
-		/// Create Service class and interface and add properties and methods based on entity and Realation sections of config informations.
+		/// Create Service class and interface and add properties and methods based on entity and relation sections of config informations.
 		/// </summary>
 		/// <param name="entity">The entity section of config informations.</param>
 		/// <param name="proj">The project in which the entity class is built.</param>
-		/// <param name="realationShips">The Realation section of config informations with MiddleClasses Realations.</param>
+		/// <param name="realationShips">The relation section of config informations with MiddleClasses Realations.</param>
 		/// <returns>
 		/// The class that was created.
 		/// </returns>
-		public static Class ServiceGenerate(this Entity entity, ref Project proj, IEnumerable<RealationShip> realationShips)
+		public static Class ServiceGenerate(this Entity entity, ref Project proj, IEnumerable<RelationShip> realationShips)
         {
 			var AppendNameSpace = "";
 
@@ -93,21 +93,21 @@ namespace Backender.CodeGenerator.Patterns.Repo
 		/// </summary>
 		/// <param name="entityService">the service class</param>
 		/// <param name="EntityName">the entity class name, witch service class is for it</param>
-		/// <param name="Realation">The Realations.</param>
-		private static void AddRepoBasedOnRealationtype(this Class entityService, RealationShip Realation, string EntityName)
+		/// <param name="relation">The Realations.</param>
+		private static void AddRepoBasedOnRealationtype(this Class entityService, RelationShip relation, string EntityName)
         {
-            switch (Realation.RealationShipType)
+            switch (relation.RealationShipType)
             {
                 case "O2M":
-                    AddRepoO2M(entityService, Realation, EntityName);
+                    AddRepoO2M(entityService, relation, EntityName);
                     break;
                 case "M2M":
 
-                    entityService.ImplementService(Realation.Entity1 + Realation.Entity2);
-                    AddRepoM2M(entityService, Realation, EntityName);
+                    entityService.ImplementService(relation.Entity1 + relation.Entity2);
+                    AddRepoM2M(entityService, relation, EntityName);
                     break;
                 case "O2O":
-                    AddRepoO2O(entityService, Realation, EntityName);
+                    AddRepoO2O(entityService, relation, EntityName);
                     break;
                 default:
                     break;
@@ -121,14 +121,14 @@ namespace Backender.CodeGenerator.Patterns.Repo
 		/// </summary>
 		/// <param name="entityService">the service class</param>
 		/// <param name="EntityName">the entity class name, witch service class is for it</param>
-		/// <param name="Realation">The Realations.</param>
-		private static void AddRepoO2O(Class entityService, RealationShip Realation, string EntityName)
+		/// <param name="relation">The Realations.</param>
+		private static void AddRepoO2O(Class entityService, RelationShip relation, string EntityName)
         {
-            var entityRealationName = Realation.Entity1;
+            var entityRealationName = relation.Entity1;
 
-            if (Realation.Entity1 == EntityName)
+            if (relation.Entity1 == EntityName)
             {
-                entityRealationName = Realation.Entity2;
+                entityRealationName = relation.Entity2;
             }
 
             var idParameter = new MethodParameter()
@@ -149,21 +149,21 @@ namespace Backender.CodeGenerator.Patterns.Repo
 		/// </summary>
 		/// <param name="entityService">the service class</param>
 		/// <param name="EntityName">the entity class name, witch service class is for it</param>
-		/// <param name="Realation">The Realations.</param>
-		private static void AddRepoM2M(Class entityService, RealationShip Realation, string EntityName)
+		/// <param name="relation">The Realations.</param>
+		private static void AddRepoM2M(Class entityService, RelationShip relation, string EntityName)
         {
-            var entityRealationName = Realation.Entity1;
+            var entityRealationName = relation.Entity1;
 
-            if (Realation.Entity1 == EntityName)
+            if (relation.Entity1 == EntityName)
             {
-                entityRealationName = Realation.Entity2;
+                entityRealationName = relation.Entity2;
             }
             var idParameter = new MethodParameter()
             {
                 DataType = "string",
                 Name = entityRealationName.ToLower() + "Id"
             };
-            var MiddleEntityName = Realation.Entity1 + Realation.Entity2;
+            var MiddleEntityName = relation.Entity1 + relation.Entity2;
             var GetEntitiesByRelatedEntityIdCode = $@"
 var {MiddleEntityName.ToPlural()} = {entityService.GetEntityFieldByEntityName(MiddleEntityName)}.Get{MiddleEntityName.ToPlural()}By{entityRealationName}({idParameter.Name});
             var {EntityName.ToPlural()} = new List<{EntityName}>();
@@ -184,20 +184,20 @@ var {MiddleEntityName.ToPlural()} = {entityService.GetEntityFieldByEntityName(Mi
 		/// </summary>
 		/// <param name="entityService">the service class</param>
 		/// <param name="EntityName">the entity class name, witch service class is for it</param>
-		/// <param name="Realation">The Realations.</param>
-		private static void AddRepoO2M(Class entityService, RealationShip Realation, string EntityName)
+		/// <param name="relation">The Realations.</param>
+		private static void AddRepoO2M(Class entityService, RelationShip relation, string EntityName)
         {
-            if (EntityName != Realation.Entity1)
+            if (EntityName != relation.Entity1)
             {
                 var idParameter = new MethodParameter()
                 {
                     DataType = "string",
-                    Name = Realation.Entity1.ToLower() + "Id"
+                    Name = relation.Entity1.ToLower() + "Id"
                 };
-                var GetEntityByRelatedEntityIdCodeO2M = $"return {entityService.GetEntityFieldByEntityName(EntityName)}.GetAll(where: p => p.{Realation.Entity1}Id == {idParameter.Name}).ToList();";
+                var GetEntityByRelatedEntityIdCodeO2M = $"return {entityService.GetEntityFieldByEntityName(EntityName)}.GetAll(where: p => p.{relation.Entity1}Id == {idParameter.Name}).ToList();";
 
                 entityService.AddMethod("List<" + EntityName + ">",
-                    $"Get{EntityName.ToPlural()}By{Realation.Entity1}",
+                    $"Get{EntityName.ToPlural()}By{relation.Entity1}",
                     GetEntityByRelatedEntityIdCodeO2M,
                     idParameter);
             }

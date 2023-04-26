@@ -59,7 +59,7 @@
 			}
 			foreach (var realationblock in realationsBlock.InnerBlocks)
 			{
-				var realtion = new RealationShip()
+				var realtion = new RelationShip()
 				{
 					Entity1 = realationblock.Value.Split('-')[0],
 					Entity2 = realationblock.Value.Split('-')[1],

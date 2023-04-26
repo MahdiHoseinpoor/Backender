@@ -9,11 +9,11 @@ namespace Backender.CodeGenerator.Patterns
 {
     public static class ConfigHandler
     {
-        public static IEnumerable<RealationShip> GetRealationShipsByEntity(this IEnumerable<RealationShip> realationShips,Entity entity)
+        public static IEnumerable<RelationShip> GetRealationShipsByEntity(this IEnumerable<RelationShip> realationShips,Entity entity)
         {
             return realationShips.Where(p=>p.Entity1==entity.EntityName || p.Entity2 == entity.EntityName);
         }
-        public static IEnumerable<RealationShip> GetRealationShipsByEntity(this IEnumerable<RealationShip> realationShips, string entityName)
+        public static IEnumerable<RelationShip> GetRealationShipsByEntity(this IEnumerable<RelationShip> realationShips, string entityName)
         {
             return realationShips.Where(p => p.Entity1 == entityName || p.Entity2 == entityName);
         }
