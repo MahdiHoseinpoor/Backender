@@ -35,7 +35,7 @@ namespace Backender.CodeGenerator.Patterns.Repo
 			//Add Realations
 			return entityDto;
 		}
-		public static void AddDtoRealations(this Project proj, ref List<RealationShip> realationShips)
+		public static void AddDtoRealations(this Project proj, ref List<RelationShip> realationShips)
 		{
 			var options = new List<string>();
 			foreach (var Realation in realationShips)

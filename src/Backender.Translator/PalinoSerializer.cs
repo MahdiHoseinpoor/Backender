@@ -59,7 +59,7 @@
 			}
 			foreach (var realationblock in realationsBlock.InnerBlocks)
 			{
-				var realtion = new RealationShip()
+				var realtion = new RelationShip()
 				{
 					Entity1 = realationblock.Value.Split('-')[0],
 					Entity2 = realationblock.Value.Split('-')[1],
@@ -106,5 +106,13 @@
 
 			return Blocks;
 		}
+	}
+
+	public class Block
+	{
+		public string Type { get; set; }
+		public string Value { get; set; }
+		public List<string> Options { get; set; } = new List<string>();
+		public List<Block> InnerBlocks { get; set; } = new List<Block>();
 	}
 }

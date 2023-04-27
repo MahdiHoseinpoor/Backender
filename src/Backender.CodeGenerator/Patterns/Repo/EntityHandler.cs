@@ -64,10 +64,10 @@ namespace Backender.CodeGenerator.Patterns.Repo
 		/// </summary>
 		/// <param name="proj">The project in which the entity class is built.</param>
 		/// <param name="realationShips">The Realation section of config informations.</param>
-		public static void AddRealations(this Project proj, ref List<RealationShip> realationShips)
+		public static void AddRealations(this Project proj, ref List<RelationShip> realationShips)
         {
             var options = new List<string>();
-            var AppendRealations = new List<RealationShip>();
+            var AppendRealations = new List<RelationShip>();
             foreach (var Realation in realationShips)
             {
                 var class1 = proj.GetClassByName(Realation.Entity1);
@@ -114,9 +114,9 @@ namespace Backender.CodeGenerator.Patterns.Repo
 		/// </summary>
 		/// <param name="proj">The project in which the entity class is built.</param>
 		/// <param name="realationShips">The Realation section of config informations with MiddleClasses Realations.</param>
-		public static void AddMiddleClassesRealations(this Project proj, IEnumerable<RealationShip> realationShips)
+		public static void AddMiddleClassesRealations(this Project proj, IEnumerable<RelationShip> realationShips)
         {
-            var Realations = new List<RealationShip>();
+            var Realations = new List<RelationShip>();
             var MiddleClasses = proj.CsFiles.GetMiddleClasses();
             foreach (var MiddleClass in MiddleClasses)
             {
@@ -145,15 +145,15 @@ namespace Backender.CodeGenerator.Patterns.Repo
             var Domain = new Domains()
             {
                 Entites = new List<Entity>(),
-                RealationShips = new List<RealationShip>()
+                RealationShips = new List<RelationShip>()
             };
-            var realationWithEntity1 = new RealationShip()
+            var realationWithEntity1 = new RelationShip()
             {
                 Entity1 = entity1,
                 Entity2 = MiddleClassName,
                 RealationShipType = "O2M"
             };
-            var realationWithEntity2 = new RealationShip()
+            var realationWithEntity2 = new RelationShip()
             {
                 Entity1 = entity2,
                 Entity2 = MiddleClassName,
