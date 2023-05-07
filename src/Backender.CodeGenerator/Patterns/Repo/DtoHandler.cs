@@ -1,11 +1,6 @@
 ﻿using Backender.CodeEditor.CSharp;
 using Backender.CodeEditor.CSharp.Objects;
 using Backender.Translator;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Backender.CodeGenerator.Patterns.Repo
 {
@@ -31,7 +26,7 @@ namespace Backender.CodeGenerator.Patterns.Repo
 			{
 				entityDto.AddProperty(Col.ColType, Col.ColName, AccessModifier.Public);
 			}
-			entityDto.UsingNameSpaces.Add(proj.DefaultNameSpace+".Enums");
+			entityDto.UsingNameSpaces.Add(proj.DefaultNameSpace + ".Enums");
 			//Add Realations
 			return entityDto;
 		}
@@ -114,9 +109,10 @@ namespace Backender.CodeGenerator.Patterns.Repo
 			var DtoDtosProperties = new List<Property>();
 			foreach (var dtoProperty in DtoClass.InnerItems.OfType<Property>())
 			{
-				if (coreProj.IsClassExist(dtoProperty.DataType)) {
+				if (coreProj.IsClassExist(dtoProperty.DataType))
+				{
 					DtoDtosProperties.Add(dtoProperty);
-					continue; 
+					continue;
 				}
 				DtoClassValues.Add($"{dtoProperty.Name} = {Parameter.Name}.{dtoProperty.Name}");
 			}
@@ -124,7 +120,7 @@ namespace Backender.CodeGenerator.Patterns.Repo
 			"{\n" + string.Join(",\n", DtoClassValues) + $"\n}};\n";
 			foreach (var DtoDtosProperty in DtoDtosProperties)
 			{
-				var entityName = DtoDtosProperty.Name.Substring(0, DtoDtosProperty.Name.Length-3);
+				var entityName = DtoDtosProperty.Name.Substring(0, DtoDtosProperty.Name.Length - 3);
 				var dtoEntity = entities.FirstOrDefault(p => p.EntityName == entityName);
 				var idParameter = "";
 				if (entityName == Parameter.DataType)
@@ -136,15 +132,17 @@ namespace Backender.CodeGenerator.Patterns.Repo
 					idParameter = $"{Parameter.Name}.{entityName}Id";
 				}
 				PrepareCode += $"\n{entity.EntityName.ToLower()}Dto.{entityName}Dto = ";
-				if (dtoEntity.EntityCategory!=entity.EntityCategory)
+				if (!string.IsNullOrEmpty(dtoEntity.EntityCategory) &&
+					dtoEntity.EntityCategory != entity.EntityCategory)
 				{
 					var usageFactory = entityFactory.ImplementFactory(dtoEntity.EntityCategory);
 					entityFactory.UsingNameSpaces.Add(coreProj.SolutionName + ".Services" + (string.IsNullOrEmpty(dtoEntity.EntityCategory) ? "" : $".{dtoEntity.EntityCategory}"));
 					PrepareCode += $"{usageFactory.Name}.";
 				}
-				var usageService= entityFactory.ImplementService(entityName);
+				var usageService = entityFactory.ImplementService(entityName);
 				PrepareCode += $"Prepare{entityName}Dto(_{entityName.ToLower()}Service.Get{entityName}ById({idParameter}));";
 			}
+
 			PrepareCode += $"\nreturn {entity.EntityName.ToLower()}Dto;";
 			entityFactory.AddMethod(entity.EntityName + "Dto",
 				$"Prepare{entity.EntityName}Dto",
@@ -203,7 +201,8 @@ namespace Backender.CodeGenerator.Patterns.Repo
 		}
 		private static Field ImplementFactory(this Class entityFactory, string entityCategory)
 		{
-			if(!entityFactory.InnerItems.OfType<Field>().Any(p=>p.Name  == $"{entityCategory}DtosFactory")){
+			if (!entityFactory.InnerItems.OfType<Field>().Any(p => p.Name == $"{entityCategory}DtosFactory"))
+			{
 				var factoryField = entityFactory.AddField(entityCategory + "DtosFactory", $"_{entityCategory.ToLower()}DtosFactory");
 				return factoryField;
 			}
@@ -211,7 +210,7 @@ namespace Backender.CodeGenerator.Patterns.Repo
 			{
 				return entityFactory.InnerItems.OfType<Field>().FirstOrDefault();
 			}
-			
+
 		}
 	}
 }
