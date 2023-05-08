@@ -28,8 +28,7 @@ Backender is an open source project in C# language that uses a config file to cr
 ``` yaml
 SolutionName: GoBlog
 SoltionNameSpace: GoBlog
-SolutionName: GoBlog
-SoltionNameSpace: GoBlog
+SavePath: D:\Backender\Sources
 Domains:
   Entites:
   - EntityName: Post
