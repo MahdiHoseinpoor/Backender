@@ -204,7 +204,7 @@ namespace Backender.CodeGenerator.Patterns.Repo
 		private static Field ImplementFactory(this Class entityFactory, string entityCategory)
 		{
 			if(!entityFactory.InnerItems.OfType<Field>().Any(p=>p.Name  == $"{entityCategory}DtosFactory")){
-				var factoryField = entityFactory.AddField(entityCategory + "DtosFactory", $"_{entityCategory.ToLower()}DtosFactory");
+				var factoryField = entityFactory.AddField(entityCategory + "DtosFactory", $"_{(!string.IsNullOrEmpty(entityCategory) ? entityCategory.ToLower()+ "Dtos" : "dtos")}Factory");
 				return factoryField;
 			}
 			else
