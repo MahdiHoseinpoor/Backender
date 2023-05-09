@@ -32,26 +32,26 @@ namespace Backender.CodeGenerator.Patterns.Repo
 				entityDto.AddProperty(Col.ColType, Col.ColName, AccessModifier.Public);
 			}
 			entityDto.UsingNameSpaces.Add(proj.DefaultNameSpace+".Enums");
-			//Add Realations
+			//Add relations
 			return entityDto;
 		}
-		public static void AddDtoRealations(this Project proj, ref List<RelationShip> realationShips)
+		public static void AddDtorelations(this Project proj, ref List<RelationShip> relationShips)
 		{
 			var options = new List<string>();
-			foreach (var Realation in realationShips)
+			foreach (var relation in relationShips)
 			{
-				var class1 = proj.GetClassByName(Realation.Entity1 + "Dto");
-				var class2 = proj.GetClassByName(Realation.Entity2 + "Dto");
+				var class1 = proj.GetClassByName(relation.Entity1 + "Dto");
+				var class2 = proj.GetClassByName(relation.Entity2 + "Dto");
 				if (class1 == null || class2 == null) continue;
-				switch (Realation.RealationShipType)
+				switch (relation.RelationShipType)
 				{
 					case "M2M":
 						break;
 					case "O2M":
-						class2.AddProperty(Realation.Entity1 + "Dto", Realation.Entity1 + "Dto", AccessModifier.Public);
+						class2.AddProperty(relation.Entity1 + "Dto", relation.Entity1 + "Dto", AccessModifier.Public);
 						break;
 					case "O2O":
-						class2.AddProperty(Realation.Entity1 + "Dto", Realation.Entity1 + "Dto", AccessModifier.Public);
+						class2.AddProperty(relation.Entity1 + "Dto", relation.Entity1 + "Dto", AccessModifier.Public);
 						break;
 					default:
 						break;

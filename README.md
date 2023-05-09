@@ -66,13 +66,13 @@ Domains:
     - ColName: Description
       ColType: string
       Options: "-r"
-  RealationShips:
+  relationShips:
   - Entity1: Post
     Entity2: Comment
-    RealationShipType: O2M
+    RelationShipType: O2M
   - Entity1: Category
     Entity2: Post
-    RealationShipType: O2M
+    RelationShipType: O2M
   Enums:
   - EnumName: CommentStatus
     EnumValues:
@@ -87,7 +87,7 @@ Domains:
     - -r means required, and gives it the required property
     - -g means get, a method is defined in the repository that returns this object based on this field
    
-2. The Realations can be
+2. The relations can be
     - O2O : ONE TO ONE
     - O2M : ONE TO MANY
     - M2M : MANY TO MANY

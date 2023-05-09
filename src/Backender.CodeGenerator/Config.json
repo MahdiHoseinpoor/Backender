@@ -41,11 +41,11 @@
         ]
       }
     ],
-    "RealationShips": [
+    "relationShips": [
       {
         "Entity1": "",
         "Entity2": "",
-        "RealationShipType": ""
+        "RelationShipType": ""
       }
     ]
   }

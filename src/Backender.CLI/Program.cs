@@ -29,7 +29,8 @@ namespace Backender.ConsoleApp
 				{
 					WriteMessage($"--- {FileName} -> The Config File Processing has been start");
 					var config = await ConfigBuilder(FileName);
-					var messages = ConfigChecker.Run(config);
+					ConfigChecker.Run(config);
+					var messages = ConfigChecker.GetMessages();
 					if (messages.Any())
 					{
 						Console.BackgroundColor = ConsoleColor.Black;
