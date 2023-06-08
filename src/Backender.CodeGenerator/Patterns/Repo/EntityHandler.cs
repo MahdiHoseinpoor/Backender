@@ -55,33 +55,33 @@ namespace Backender.CodeGenerator.Patterns.Repo
 				}
 			}
 			entityClass.UsingNameSpaces.Add(proj.DefaultNameSpace + ".Enums");
-			//Add Realations
+			//Add relations
 			return entityClass;
         }
 
 		/// <summary>
-		/// Adding the Realationships based on entity pasectionrt of config informations to Entity Classes
+		/// Adding the relationShips based on entity pasectionrt of config informations to Entity Classes
 		/// </summary>
 		/// <param name="proj">The project in which the entity class is built.</param>
-		/// <param name="realationShips">The Realation section of config informations.</param>
-		public static void AddRealations(this Project proj, ref List<RelationShip> realationShips)
+		/// <param name="relationShips">The relation section of config informations.</param>
+		public static void Addrelations(this Project proj, ref List<RelationShip> relationShips)
         {
             var options = new List<string>();
-            var AppendRealations = new List<RelationShip>();
-            foreach (var Realation in realationShips)
+            var Appendrelations = new List<RelationShip>();
+            foreach (var relation in relationShips)
             {
-                var class1 = proj.GetClassByName(Realation.Entity1);
-                var class2 = proj.GetClassByName(Realation.Entity2);
-                switch (Realation.RealationShipType)
+                var class1 = proj.GetClassByName(relation.Entity1);
+                var class2 = proj.GetClassByName(relation.Entity2);
+                switch (relation.RelationShipType)
                 {
                     case "M2M":
-                        var MiddleClassDomain = CreateMiddleClass(Realation.Entity1, Realation.Entity2);
+                        var MiddleClassDomain = CreateMiddleClass(relation.Entity1, relation.Entity2);
                         var MiddleClassEntity = MiddleClassDomain.Entites.FirstOrDefault();
                         options.Clear();
                         options.Add("MiddleClass");
 
                         var MiddleClass = MiddleClassEntity.EnitityGenerate(ref proj, options);
-                        AppendRealations.AddRange(MiddleClassDomain.RealationShips);
+                        Appendrelations.AddRange(MiddleClassDomain.RelationShips);
                         //var MiddleClassName = class1.Name + class2.Name;
                         //var MiddleClass = proj.AddClass(MiddleClassName);
                         //MiddleClass.AddProperty(class1.Name, class1.Name + "Id");
@@ -106,24 +106,24 @@ namespace Backender.CodeGenerator.Patterns.Repo
                         break;
                 }
             }
-            realationShips.AddRange(AppendRealations);
+            relationShips.AddRange(Appendrelations);
         }
 
 		/// <summary>
 		/// Adding Relationships between MiddleClasses and Entity classes
 		/// </summary>
 		/// <param name="proj">The project in which the entity class is built.</param>
-		/// <param name="realationShips">The Realation section of config informations with MiddleClasses Realations.</param>
-		public static void AddMiddleClassesRealations(this Project proj, IEnumerable<RelationShip> realationShips)
+		/// <param name="relationShips">The relation section of config informations with MiddleClasses relations.</param>
+		public static void AddMiddleClassesrelations(this Project proj, IEnumerable<RelationShip> relationShips)
         {
-            var Realations = new List<RelationShip>();
+            var relations = new List<RelationShip>();
             var MiddleClasses = proj.CsFiles.GetMiddleClasses();
             foreach (var MiddleClass in MiddleClasses)
             {
-                var MiddleClassesrealations = realationShips.GetRealationShipsByEntity(MiddleClass.Name);
-                Realations.AddRange(MiddleClassesrealations);
+                var MiddleClassesrelations = relationShips.GetrelationShipsByEntity(MiddleClass.Name);
+                relations.AddRange(MiddleClassesrelations);
             }
-            proj.AddRealations(ref Realations);
+            proj.Addrelations(ref relations);
         }
 		/// <summary>
 		/// Create An Entity section for MiddleClass
@@ -145,23 +145,23 @@ namespace Backender.CodeGenerator.Patterns.Repo
             var Domain = new Domains()
             {
                 Entites = new List<Entity>(),
-                RealationShips = new List<RelationShip>()
+                RelationShips = new List<RelationShip>()
             };
-            var realationWithEntity1 = new RelationShip()
+            var relationWithEntity1 = new RelationShip()
             {
                 Entity1 = entity1,
                 Entity2 = MiddleClassName,
-                RealationShipType = "O2M"
+                RelationShipType = "O2M"
             };
-            var realationWithEntity2 = new RelationShip()
+            var relationWithEntity2 = new RelationShip()
             {
                 Entity1 = entity2,
                 Entity2 = MiddleClassName,
-                RealationShipType = "O2M"
+                RelationShipType = "O2M"
             };
             Domain.Entites.Add(MiddleClass);
-            Domain.RealationShips.Add(realationWithEntity1);
-            Domain.RealationShips.Add(realationWithEntity2);
+            Domain.RelationShips.Add(relationWithEntity1);
+            Domain.RelationShips.Add(relationWithEntity2);
             return Domain;
         }
 

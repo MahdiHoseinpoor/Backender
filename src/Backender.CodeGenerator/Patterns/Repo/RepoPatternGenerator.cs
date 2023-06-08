@@ -65,24 +65,24 @@ namespace Backender.CodeGenerator.Patterns.Repo
             {
                 var entityClass = Entity.EnitityGenerate(ref CoreProj);
                 var DtoClass = Entity.DtoGenerate(ref CoreProj);
-                var entityService = Entity.ServiceGenerate(ref ServicesProj, _config.Domains.RealationShips);
+                var entityService = Entity.ServiceGenerate(ref ServicesProj, _config.Domains.RelationShips);
                 DbContextClass.AddProperty($"DbSet<{Entity.EntityName}>", Entity.EntityName);           
             }
 			
-            var realations = _config.Domains.RealationShips;
+            var relations = _config.Domains.RelationShips;
             var enums = _config.Domains.Enums;
 			CoreProj.AddEnums(ref enums);
-			CoreProj.AddRealations(ref realations);
-			CoreProj.AddDtoRealations(ref realations);
+			CoreProj.Addrelations(ref relations);
+			CoreProj.AddDtorelations(ref relations);
 			_config.Domains.Entites.FactoriesGenerate(ref ServicesProj,CoreProj);
 			_config.Domains.Entites.UnitOfWorkGenerate(ref ServicesProj,CoreProj);
 
-            CoreProj.AddMiddleClassesRealations(realations);
-            foreach (var Relation_M2M in _config.Domains.RealationShips.Where(p => p.RealationShipType == "M2M"))
+            CoreProj.AddMiddleClassesrelations(relations);
+            foreach (var Relation_M2M in _config.Domains.RelationShips.Where(p => p.RelationShipType == "M2M"))
             {
                 var middleClassDomain = EntityHandler.CreateMiddleClass(Relation_M2M.Entity1, Relation_M2M.Entity2);
                 var MiddleClassEntity = middleClassDomain.Entites.FirstOrDefault();
-                var MiddleClass = MiddleClassEntity.ServiceGenerate(ref ServicesProj, middleClassDomain.RealationShips);
+                var MiddleClass = MiddleClassEntity.ServiceGenerate(ref ServicesProj, middleClassDomain.RelationShips);
             }
 			foreach (var EntityNameSpace in CoreProj.CsFiles.OfType<Class>().Where(p => p.BaseClassName == "BaseEntity").Select(p=>p.NameSpace).Distinct())
 			{

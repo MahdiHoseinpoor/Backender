@@ -39,7 +39,7 @@
 			var domains = new Domains();
 			var entityBlocks = Blocks.Where(p=>p.Type=="Entity");
 			var EnumBlocks = Blocks.Where(p=>p.Type=="Enum");
-			var realationsBlock = Blocks.FirstOrDefault(p=>p.Type== "Realations");
+			var relationsBlock = Blocks.FirstOrDefault(p=>p.Type== "relations");
 			domains.Entites = new List<Entity>();
 			foreach (var entityBlock in entityBlocks)
 			{
@@ -57,15 +57,15 @@
 				}
 				domains.Entites.Add(entity);
 			}
-			foreach (var realationblock in realationsBlock.InnerBlocks)
+			foreach (var relationblock in relationsBlock.InnerBlocks)
 			{
 				var realtion = new RelationShip()
 				{
-					Entity1 = realationblock.Value.Split('-')[0],
-					Entity2 = realationblock.Value.Split('-')[1],
-					RealationShipType = realationblock.Type
+					Entity1 = relationblock.Value.Split('-')[0],
+					Entity2 = relationblock.Value.Split('-')[1],
+					RelationShipType = relationblock.Type
 				};
-				domains.RealationShips.Add(realtion);
+				domains.RelationShips.Add(realtion);
 			}
 
 			foreach (var EnumBlock in EnumBlocks)

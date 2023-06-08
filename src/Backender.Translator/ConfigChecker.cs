@@ -11,44 +11,51 @@ namespace Backender.Translator
 {
 	public static class ConfigChecker
 	{
-		public static List<Message> Run(Config config)
+		public static List<Message> Messages { get; private set; } = new List<Message>();
+		public static List<Message> GetMessages()
+		{
+			return Messages.OrderBy(p => p.MessageType).ToList();
+		}
+		
+		public static void Run(Config config)
 		{
 			var Messages = new List<Message>();
 			SolutionValidation(config, Messages);
 			EntityValidation(config, Messages);
 			EnumValidation(config, Messages);
-			RealationShipsValidation(config, Messages);
-			return Messages.OrderBy(p => p.MessageType).ToList();
+			relationShipsValidation(config, Messages);
+			ConfigChecker.Messages.AddRange(Messages);
+			
 		}
 
-		private static void RealationShipsValidation(Config config, List<Message> Messages)
+		private static void relationShipsValidation(Config config, List<Message> Messages)
 		{
-			foreach (var RealationShip in config.Domains.RealationShips)
+			foreach (var relationship in config.Domains.RelationShips)
 			{	
-				if (string.IsNullOrEmpty(RealationShip.RealationShipType))
+				if (string.IsNullOrEmpty(relationship.RelationShipType))
 				{
-					Messages.Add(new Message("BA001", MessageType.Error, $"RealationShipType in RealationShips can't be null"));
+					Messages.Add(new Message("BA001", MessageType.Error, $"RelationShipType in relationShips can't be null"));
 				}
-				if (string.IsNullOrEmpty(RealationShip.Entity1))
+				if (string.IsNullOrEmpty(relationship.Entity1))
 				{
-					Messages.Add(new Message("BA001", MessageType.Error, $"Entity1 in RealationShips can't be null"));
+					Messages.Add(new Message("BA001", MessageType.Error, $"Entity1 in relationShips can't be null"));
 				}
-				if (string.IsNullOrEmpty(RealationShip.Entity2))
+				if (string.IsNullOrEmpty(relationship.Entity2))
 				{
-					Messages.Add(new Message("BA001", MessageType.Error, $"Entity2 in RealationShips can't be null"));
+					Messages.Add(new Message("BA001", MessageType.Error, $"Entity2 in relationShips can't be null"));
 				}
 
-				if (RealationShip.RealationShipType != "O2M" && RealationShip.RealationShipType != "M2M" && RealationShip.RealationShipType != "O2P")
+				if (relationship.RelationShipType != "O2M" && relationship.RelationShipType != "M2M" && relationship.RelationShipType != "O2P")
 				{
-					Messages.Add(new Message("BA005", MessageType.Error, $"'{RealationShip.RealationShipType}' is not a RealationType"));
+					Messages.Add(new Message("BA005", MessageType.Error, $"'{relationship.RelationShipType}' is not a relationType"));
 				}
-				if (!config.Domains.Entites.Any(p => p.EntityName == RealationShip.Entity1) && !string.IsNullOrEmpty(RealationShip.Entity1))
+				if (!config.Domains.Entites.Any(p => p.EntityName == relationship.Entity1) && !string.IsNullOrEmpty(relationship.Entity1))
 				{
-					Messages.Add(new Message("BA006", MessageType.Error, $"'{RealationShip.Entity1}' which you defined in the Entity1 of the relation, does not exist"));
+					Messages.Add(new Message("BA006", MessageType.Error, $"'{relationship.Entity1}' which you defined in the Entity1 of the relation, does not exist"));
 				}
-				if (!config.Domains.Entites.Any(p => p.EntityName == RealationShip.Entity2) && !string.IsNullOrEmpty(RealationShip.Entity2))
+				if (!config.Domains.Entites.Any(p => p.EntityName == relationship.Entity2) && !string.IsNullOrEmpty(relationship.Entity2))
 				{
-					Messages.Add(new Message("BA006", MessageType.Error, $"'{RealationShip.Entity2}' which you defined in the Entity2 of the relation, does not exist"));
+					Messages.Add(new Message("BA006", MessageType.Error, $"'{relationship.Entity2}' which you defined in the Entity2 of the relation, does not exist"));
 				}
 			}
 		}

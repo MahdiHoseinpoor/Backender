@@ -19,11 +19,11 @@ namespace Backender.CodeGenerator.Patterns.Repo
 		/// </summary>
 		/// <param name="entity">The entity section of config informations.</param>
 		/// <param name="proj">The project in which the entity class is built.</param>
-		/// <param name="realationShips">The relation section of config informations with MiddleClasses Realations.</param>
+		/// <param name="relationShips">The relation section of config informations with MiddleClasses relations.</param>
 		/// <returns>
 		/// The class that was created.
 		/// </returns>
-		public static Class ServiceGenerate(this Entity entity, ref Project proj, IEnumerable<RelationShip> realationShips)
+		public static Class ServiceGenerate(this Entity entity, ref Project proj, IEnumerable<RelationShip> relationShips)
         {
 			var AppendNameSpace = "";
 
@@ -34,10 +34,10 @@ namespace Backender.CodeGenerator.Patterns.Repo
 			var entityService = proj.AddClass(entity.EntityName + "Service",AppendNameSpace:AppendNameSpace);
             var entityRepo = entityService.ImplementRepo(entity.EntityName);
             entityService.AddRepoWithCommonMethods(entity.EntityName);
-            var realations = realationShips.GetRealationShipsByEntity(entity);
-            foreach (var EntityRealation in realations)
+            var relations = relationShips.GetrelationShipsByEntity(entity);
+            foreach (var Entityrelation in relations)
             {
-                entityService.AddRepoBasedOnRealationtype(EntityRealation, entity.EntityName);                
+                entityService.AddRepoBasedOnrelationtype(Entityrelation, entity.EntityName);                
             }
 			foreach (var col in entity.Cols.Where(p => !string.IsNullOrEmpty(p.Options)))
 			{
@@ -89,14 +89,14 @@ namespace Backender.CodeGenerator.Patterns.Repo
         }
 
 		/// <summary>
-		/// Add some methods based on Realationtype to service
+		/// Add some methods based on relationtype to service
 		/// </summary>
 		/// <param name="entityService">the service class</param>
 		/// <param name="EntityName">the entity class name, witch service class is for it</param>
-		/// <param name="relation">The Realations.</param>
-		private static void AddRepoBasedOnRealationtype(this Class entityService, RelationShip relation, string EntityName)
+		/// <param name="relation">The relations.</param>
+		private static void AddRepoBasedOnrelationtype(this Class entityService, RelationShip relation, string EntityName)
         {
-            switch (relation.RealationShipType)
+            switch (relation.RelationShipType)
             {
                 case "O2M":
                     AddRepoO2M(entityService, relation, EntityName);
@@ -117,55 +117,55 @@ namespace Backender.CodeGenerator.Patterns.Repo
 
 
 		/// <summary>
-		/// Add some methods based on O2O Realationtype to service
+		/// Add some methods based on O2O relationtype to service
 		/// </summary>
 		/// <param name="entityService">the service class</param>
 		/// <param name="EntityName">the entity class name, witch service class is for it</param>
-		/// <param name="relation">The Realations.</param>
+		/// <param name="relation">The relations.</param>
 		private static void AddRepoO2O(Class entityService, RelationShip relation, string EntityName)
         {
-            var entityRealationName = relation.Entity1;
+            var entityrelationName = relation.Entity1;
 
             if (relation.Entity1 == EntityName)
             {
-                entityRealationName = relation.Entity2;
+                entityrelationName = relation.Entity2;
             }
 
             var idParameter = new MethodParameter()
             {
                 DataType = "string",
-                Name = entityRealationName.ToLower() + "Id"
+                Name = entityrelationName.ToLower() + "Id"
             };
-            var GetEntityByRelatedEntityIdCode = $"return {entityService.GetEntityFieldByEntityName(EntityName)}.GetAll(where: p => p.{entityRealationName}Id == {idParameter.Name}).FirstOrDefault();";
+            var GetEntityByRelatedEntityIdCode = $"return {entityService.GetEntityFieldByEntityName(EntityName)}.GetAll(where: p => p.{entityrelationName}Id == {idParameter.Name}).FirstOrDefault();";
 
             entityService.AddMethod(EntityName,
-                $"Get{EntityName}By{entityRealationName}",
+                $"Get{EntityName}By{entityrelationName}",
                 GetEntityByRelatedEntityIdCode,
                 idParameter);
 
         }
 		/// <summary>
-		/// Add some methods based on M2M Realationtype to service
+		/// Add some methods based on M2M relationtype to service
 		/// </summary>
 		/// <param name="entityService">the service class</param>
 		/// <param name="EntityName">the entity class name, witch service class is for it</param>
-		/// <param name="relation">The Realations.</param>
+		/// <param name="relation">The relations.</param>
 		private static void AddRepoM2M(Class entityService, RelationShip relation, string EntityName)
         {
-            var entityRealationName = relation.Entity1;
+            var entityrelationName = relation.Entity1;
 
             if (relation.Entity1 == EntityName)
             {
-                entityRealationName = relation.Entity2;
+                entityrelationName = relation.Entity2;
             }
             var idParameter = new MethodParameter()
             {
                 DataType = "string",
-                Name = entityRealationName.ToLower() + "Id"
+                Name = entityrelationName.ToLower() + "Id"
             };
             var MiddleEntityName = relation.Entity1 + relation.Entity2;
             var GetEntitiesByRelatedEntityIdCode = $@"
-var {MiddleEntityName.ToPlural()} = {entityService.GetEntityFieldByEntityName(MiddleEntityName)}.Get{MiddleEntityName.ToPlural()}By{entityRealationName}({idParameter.Name});
+var {MiddleEntityName.ToPlural()} = {entityService.GetEntityFieldByEntityName(MiddleEntityName)}.Get{MiddleEntityName.ToPlural()}By{entityrelationName}({idParameter.Name});
             var {EntityName.ToPlural()} = new List<{EntityName}>();
             foreach (var {MiddleEntityName} in {MiddleEntityName.ToPlural()})
             {{
@@ -175,16 +175,16 @@ var {MiddleEntityName.ToPlural()} = {entityService.GetEntityFieldByEntityName(Mi
             return {EntityName.ToPlural()};
 ";
             entityService.AddMethod($"IList<{EntityName}>",
-                $"Get{EntityName.ToPlural()}By{entityRealationName}",
+                $"Get{EntityName.ToPlural()}By{entityrelationName}",
                 GetEntitiesByRelatedEntityIdCode,
                 idParameter);
         }
 		/// <summary>
-		/// Add some methods based on O2M Realationtype to service
+		/// Add some methods based on O2M relationtype to service
 		/// </summary>
 		/// <param name="entityService">the service class</param>
 		/// <param name="EntityName">the entity class name, witch service class is for it</param>
-		/// <param name="relation">The Realations.</param>
+		/// <param name="relation">The relations.</param>
 		private static void AddRepoO2M(Class entityService, RelationShip relation, string EntityName)
         {
             if (EntityName != relation.Entity1)

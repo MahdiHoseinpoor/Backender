@@ -17,7 +17,7 @@ namespace Backender.Translator
     {
 		public List<Enum_> Enums { get; set; } = new List<Enum_>();
 		public List<Entity> Entites { get; set; } = new List<Entity>();
-        public List<RelationShip> RealationShips { get; set; } = new List<RelationShip>();
+        public List<RelationShip> RelationShips { get; set; } = new List<RelationShip>();
     }
 	public class Enum_
 	{
@@ -41,7 +41,7 @@ namespace Backender.Translator
     {
         public string Entity1 { get; set; }
         public string Entity2 { get; set; }
-        public string RealationShipType { get; set; }
+        public string RelationShipType { get; set; }
     }
 
     public class Config
