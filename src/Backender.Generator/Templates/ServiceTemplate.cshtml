@@ -1,0 +1,115 @@
+﻿@using Backender.Translator.Handlers;
+@using Backender.Generator;
+@model Backender.Translator.Templates.ServiceTemplate
+@{
+    string TableName = Model.Table.Name;
+    string TableRepoName = Model.Table.Name + "Repo";
+
+    string ClassName = $"{Model.Table.Name}Service";
+    string ProjectNameSpace = Model.Project.NameSpace;
+    string ClassNameSpace = ProjectNameSpace + (!string.IsNullOrEmpty(Model.Table.Category) ? $".{Model.Table.Category}" : string.Empty);
+}
+using @Model.EntityProject.NameSpace;
+using @Model.DbContextProject.NameSpace;
+using @Model.EntityProject.GetNameSpaceOfFile(TableName);
+using Microsoft.EntityFrameworkCore;
+namespace @ClassNameSpace
+{
+     public class @ClassName : I@(ClassName)
+    {
+        #region Fields
+        public IRepo<@TableName> @TableRepoName.ToFieldName();
+@foreach (var middleEntityTable in Model.Table.MiddleEntities)
+    {
+        <text>        public IRepo<@middleEntityTable.Name> @((middleEntityTable.Name + "Repo").ToFieldName());
+</text>
+}
+        #endregion
+
+        #region Ctor
+        public @(ClassName)(IRepo<@TableName> @TableRepoName@foreach (var middleEntityTable in Model.Table.MiddleEntities){
+            <text>, IRepo<@middleEntityTable.Name> @(middleEntityTable.Name)Repo</text>
+        })
+        {
+            @TableRepoName.ToFieldName() = @TableRepoName;
+@foreach (var middleEntityTable in Model.Table.MiddleEntities){
+            <text>            @((middleEntityTable.Name + "Repo").ToFieldName()) = @(middleEntityTable.Name)Repo;
+</text>
+        }
+        }
+        #endregion
+
+        #region Utilities
+        #region @TableName
+        public IList<@TableName> GetAll@(@TableName.ToPlural())()
+        {
+            return  @(TableRepoName.ToFieldName()).GetAll().ToList();
+        }
+        public @TableName Get@(@TableName)ById(string id)
+        {
+            return  @(TableRepoName.ToFieldName()).GetById(id);
+        }
+        public bool Insert@(@TableName)(@TableName @TableName.ToLower())
+        {
+            @(TableRepoName.ToFieldName()).Insert(@TableName.ToLower());
+            return @(TableRepoName.ToFieldName()).Save();
+        }
+        public bool Update@(@TableName)(@TableName @TableName.ToLower())
+        {
+            @(TableRepoName.ToFieldName()).Update(@TableName.ToLower());
+            return @(TableRepoName.ToFieldName()).Save();
+        }
+        public bool Delete@(@TableName)(@TableName @TableName.ToLower())
+        {
+            @(TableRepoName.ToFieldName()).Delete(@TableName.ToLower());
+            return @(TableRepoName.ToFieldName()).Save();
+        }
+        public bool Delete@(@TableName)(string id)
+        {
+            @(TableRepoName.ToFieldName()).Delete(id);
+            return @(TableRepoName.ToFieldName()).Save();
+        }
+        #endregion
+        @foreach (var middleEntityTable in Model.Table.MiddleEntities)
+        {
+                var middleEntityRepo = middleEntityTable.Name + "Repo";
+       <text>
+        #region @middleEntityTable.Name
+        public IList<@middleEntityTable.Name> Get@(middleEntityTable.Name.ToPlural())By@(middleEntityTable.DataBag["Entity1"])Id(string @(middleEntityTable.DataBag["Entity1"].ToLower())Id)
+        {
+            return @(middleEntityRepo.ToFieldName()).GetAll().ToList();
+        }
+        public IList<@middleEntityTable.Name> Get@(middleEntityTable.Name.ToPlural())By@(middleEntityTable.DataBag["Entity2"])Id(string @(middleEntityTable.DataBag["Entity2"].ToLower())Id)
+        {
+            return @(middleEntityRepo.ToFieldName()).GetAll().ToList();
+        }
+        public @middleEntityTable.Name Get@(middleEntityTable.Name)ById(string id)
+        {
+            return @(middleEntityRepo.ToFieldName()).GetById(id);
+        }
+        public bool Insert@(middleEntityTable.Name)(@middleEntityTable.Name @middleEntityTable.Name.ToLower())
+        {
+            @(middleEntityRepo.ToFieldName()).Insert(@middleEntityTable.Name.ToLower());
+            return @(middleEntityRepo.ToFieldName()).Save();
+        }
+        public bool Update@(middleEntityTable.Name)(@middleEntityTable.Name @middleEntityTable.Name.ToLower())
+        {
+            @(middleEntityRepo.ToFieldName()).Update(@middleEntityTable.Name.ToLower());
+            return @(middleEntityRepo.ToFieldName()).Save();
+        }
+        public bool Delete@(middleEntityTable.Name)(@middleEntityTable.Name @middleEntityTable.Name.ToLower())
+        {
+            @(middleEntityRepo.ToFieldName()).Delete(@middleEntityTable.Name.ToLower());
+            return @(middleEntityRepo.ToFieldName()).Save();
+        }
+        public bool Delete@(middleEntityTable.Name)(string id)
+        {
+            @(middleEntityRepo.ToFieldName()).Delete(id);
+            return @(middleEntityRepo.ToFieldName()).Save();
+        }
+        #endregion
+     </text>
+        }
+        #endregion
+    }
+}

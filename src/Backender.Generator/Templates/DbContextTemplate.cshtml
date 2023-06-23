@@ -1,0 +1,31 @@
+﻿@using Backender.Translator.Handlers;
+@using Backender.Translator.Handlers;
+@using Backender.Generator;
+@model Backender.Translator.Templates.DbContextTemplate
+@{
+    string ClassName = "ApplicationDbContext";
+    string ProjectNameSpace = Model.Project.NameSpace;
+    string ClassNameSpace = ProjectNameSpace;
+}
+using @Model.EntityProject.NameSpace;
+using Microsoft.EntityFrameworkCore;
+@foreach (var EntityNameSpace in Model.EntityProject.GetNameSpaces(".Domains"))
+{
+<text>using @EntityNameSpace;
+</text>
+}
+namespace @ClassNameSpace
+{  
+    public class @ClassName : DbContext
+    {
+        public @(ClassName)(DbContextOptions<@ClassName> options) : base(options)
+        {
+
+        }
+    @foreach (var Table in Model.Tables.Where(p => !p.Options.HasOption("baseentity")))
+{
+    <text>        public virtual DbSet<@Table.Name> @Table.Name { get; set; }
+</text>
+}
+    }
+}

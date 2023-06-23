@@ -1,137 +1,173 @@
-﻿
-using Backender.CodeEditor.CSharp;
-using Backender.CodeGenerator;
-using System.ComponentModel;
-using Backender.Translator;
+﻿using Backender.Translator;
+using Backender.Translator.Handlers;
+using Backender.Generator;
+using Backender.Translator.Handlers;
+using Backender.Translator.Models;
 using System.Text.Json;
-using System;
+using File = System.IO.File;
+using File_ = Backender.Translator.Models.File;
+using System.Text;
+using System.Xml;
 
-namespace Backender.ConsoleApp
+namespace Backender.Cli
 {
-	internal class Program
-	{
-		
-		static async Task Main(string[] args)
-		{
-			ConsoleColor DefaultBackgroundColor = Console.BackgroundColor;
-			string FileName = "";
-			Engine app = new();
+    internal class Program
+    {
+         const string Banner =
+@"
+       ██████╗░░█████╗░░█████╗░██╗░░██╗███████╗███╗░░██╗██████╗░███████╗██████╗░
+       ██╔══██╗██╔══██╗██╔══██╗██║░██╔╝██╔════╝████╗░██║██╔══██╗██╔════╝██╔══██╗
+       ██████╦╝███████║██║░░╚═╝█████═╝░█████╗░░██╔██╗██║██║░░██║█████╗░░██████╔╝
+       ██╔══██╗██╔══██║██║░░██╗██╔═██╗░██╔══╝░░██║╚████║██║░░██║██╔══╝░░██╔══██╗
+       ██████╦╝██║░░██║╚█████╔╝██║░╚██╗███████╗██║░╚███║██████╔╝███████╗██║░░██║
+       ╚═════╝░╚═╝░░╚═╝░╚════╝░╚═╝░░╚═╝╚══════╝╚═╝░░╚══╝╚═════╝░╚══════╝╚═╝░░╚═╝";
+        const string Information =
+@"
+ Backender.Cli v2.0.0
+ Created by: Mahdi Hoseinpoor
+";
 
-			WriteMessage("===================== Welcome to Backender! =====================\n\n", ConsoleColor.Blue);
-			while (true)
-			{
+        static async Task Main(string[] args)
+        {
+            string FileName = string.Empty;
+            if (args.Count() > 1)
+            {
+                FileName = args[0];
+            }
+            BlueprintCompiler.Configure();
+            Engine engine = new Engine();
+            ConsoleColor DefaultBackgroundColor = Console.BackgroundColor;
+            WriteMessage(Banner, ConsoleColor.Blue);
+            WriteMessage(Information, ConsoleColor.Blue);
+            while (true)
+            {
+                try
+                {
+                    if (string.IsNullOrEmpty(FileName))
+                    {
+                        FileName = ReadLine("Enter The Location of Blueprint File", ConsoleColor.White)!.Trim();
+                    }
+                    var startTime = DateTime.Now.Ticks;
+                    if (File.Exists(FileName))
+                    {
+                        var xmldoc = XmlDeserializer.GetXmlDocument(FileName);
+                        WriteMessage($"--- {FileName} -> The Blueprint File Processing has been start");
 
+                        var Blueprint = XmlDeserializer.ConvertXmlToBlueprint(xmldoc);
+                        Blueprint.Compile(FileName);
+                        Blueprint = Blueprint.Configuration();
+                        var Tables = TableHandler.CreateTables(Blueprint);
+                        var Files = new List<File_>();
+                        Blueprint.Validate();
+                        if (BlueprintCompiler.Messages.Any())
+                        {
+                            Console.BackgroundColor = ConsoleColor.Black;
+                            WriteMessage($"   ErrorCode | Description ", ConsoleColor.White);
+                            foreach (var message in BlueprintCompiler.Messages.OrderBy(p => p.MessageType))
+                            {
+                                ConsoleColor consoleColor = ConsoleColor.White;
+                                switch (message.MessageType)
+                                {
+                                    case MessageType.Error:
+                                        consoleColor = ConsoleColor.Red;
+                                        break;
+                                    case MessageType.Warning:
+                                        consoleColor = ConsoleColor.Yellow;
+                                        break;
+                                    case MessageType.Message:
+                                        consoleColor = ConsoleColor.Cyan;
+                                        break;
+                                    default:
+                                        break;
+                                }
+                                WriteMessage($"	{message.Code} | {message.Description}", consoleColor);
 
-				FileName = ReadLine("Enter your Configuration File Location",ConsoleColor.White)!.Trim();
-
-
-				if (File.Exists(FileName))
-				{
-					WriteMessage($"--- {FileName} -> The Config File Processing has been start");
-					var config = await ConfigBuilder(FileName);
-					ConfigChecker.Run(config);
-					var messages = ConfigChecker.GetMessages();
-					if (messages.Any())
-					{
-						Console.BackgroundColor = ConsoleColor.Black;
-						WriteMessage($"   ErrorCode | Description ", ConsoleColor.White);
-						foreach (var message in messages)
-						{
-							ConsoleColor consoleColor = ConsoleColor.White;
-							switch (message.MessageType)
-							{
-								case MessageType.Error:
-									consoleColor = ConsoleColor.Red;
-									break;
-								case MessageType.Warning:
-									consoleColor = ConsoleColor.Yellow;
-									break;
-								case MessageType.Message:
-									consoleColor = ConsoleColor.Cyan;
-									break;
-								default:
-									break;
-							}
-							WriteMessage($"	{message.Code} | {message.Description}", consoleColor);
-
-						}
-						Console.BackgroundColor = DefaultBackgroundColor;
-						if (messages.Any(p => p.MessageType == MessageType.Error))
-						{
+                            }
+                            Console.BackgroundColor = DefaultBackgroundColor;
+                            if (BlueprintCompiler.Messages.Any(p => p.MessageType == MessageType.Error))
+                            {
 #if DEBUG
-							Console.ReadKey();
-							Environment.Exit(0);
+                            Console.ReadKey();
+                            Environment.Exit(0);
 #else
-							continue;
+                                continue;
 #endif
-						}
-					}
+                            }
+                        }
 
-					WriteMessage($"\n	Backender Engine Start to Generate!");
-					await app.Run(config);
-					Console.ForegroundColor = ConsoleColor.Green;
-					Console.Write($"  Your Project Has Been Created in ");
-					Console.ForegroundColor = ConsoleColor.Yellow;
-					Console.Write(app.SavePath + "\n");
-					Console.ForegroundColor = ConsoleColor.White;
-					Environment.Exit(0);
-				}
-				else
-				{
-					Console.BackgroundColor = ConsoleColor.Black;
-					WriteMessage($"	I can not found Config file in '{FileName}'", ConsoleColor.Red);
-					Console.BackgroundColor = DefaultBackgroundColor;
+                        WriteMessage($"\n	Backender Engine Start to Generate!");
+                        await engine.RunAsync(Blueprint);
+                        var FinishTime = DateTime.Now.Ticks;
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        var CreatedTime = FinishTime - startTime;
+                        if ((CreatedTime / TimeSpan.TicksPerMillisecond) < 2000)
+                        {
+                            Console.Write($"  Your Project Has Been Created in {CreatedTime / TimeSpan.TicksPerMillisecond} Milliseconds!");
 
-				}
+                        }
+                        else
+                        {
+                            Console.Write($"  Your Project Has Been Created in {CreatedTime / TimeSpan.TicksPerSecond} Seconds!");
+                        }
+                        Console.ForegroundColor = ConsoleColor.White;
+                        WriteMessage($"\nPress Any key To Close...");
+                        Console.ReadKey();
+                        Environment.Exit(0);
 
-			}
 
-			//app.Run("G:\\Shopping Site.json", "G:\\NewShoppingSite");
+                    }
+                    else
+                    {
+                        Console.BackgroundColor = ConsoleColor.Black;
+                        WriteMessage($"	I can not found Blueprint file in '{FileName}'", ConsoleColor.Red);
+                        Console.BackgroundColor = DefaultBackgroundColor;
+                    }
+                }
+                catch (InvalidDataException e)
+                {
+                    WriteMessage($"\t{e.Message}", ConsoleColor.Red);
+                }
+                catch (XmlException)
+                {
+                    WriteMessage($"The Blueprint file has syntax error.", ConsoleColor.Red);
+                }
+                catch (Exception e)
+                {
+                    WriteMessage($"There is an Error: {e.Message}", ConsoleColor.Red);
+                }
+                finally
+                {
+                    FileName = string.Empty;
+                }
 
-		}
-		public static void WriteMessage(string content, ConsoleColor consoleColor = ConsoleColor.White)
-		{
-			Console.ForegroundColor = consoleColor;
-			Console.WriteLine($" {content}");
-		}
-		public static string ReadLine(string message, ConsoleColor messageColor)
-		{
-			Console.ForegroundColor = messageColor;
-			Console.Write($" {message}");
-			Console.ForegroundColor = ConsoleColor.White;
-			Console.Write($": ");
-			return Console.ReadLine();
-		}
-		public static string ReadLine()
-		{
-			Console.ForegroundColor = ConsoleColor.Cyan;
-			Console.Write($" {Environment.UserName}");
-			Console.ForegroundColor = ConsoleColor.White;
-			Console.Write($":");
-			Console.ForegroundColor = ConsoleColor.Blue;
-			Console.Write($"~");
-			Console.ForegroundColor = ConsoleColor.White;
-			Console.Write($"$ ");
-			return Console.ReadLine();
-		}
-		private async static Task<Config> ConfigBuilder(string FileName)
-		{
-			var config = new Config();
-			var configFile = await File.ReadAllTextAsync(FileName);
-			if (Path.GetExtension(FileName).ToLower() == ".json")
-			{
-				config = JsonSerializer.Deserialize<Config>(configFile);
-			}
-			if (Path.GetExtension(FileName).ToLower() == ".yaml")
-			{
-				config = YamlSerializer.Deserialize<Config>(configFile);
-			}
-			else if (Path.GetExtension(FileName).ToLower() == ".palino")
-			{
-				config = PalinoSerializer.Deserialize(configFile);
-			}
-			return config;
-		}
 
-	}
+            }
+        }
+        public static void WriteMessage(string content, ConsoleColor consoleColor = ConsoleColor.White)
+        {
+            Console.ForegroundColor = consoleColor;
+            Console.WriteLine($" {content}");
+        }
+        public static string ReadLine(string message, ConsoleColor messageColor)
+        {
+            Console.ForegroundColor = messageColor;
+            Console.Write($" {message}");
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write($": ");
+            return Console.ReadLine();
+        }
+        public static string ReadLine()
+        {
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.Write($" {Environment.UserName}");
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write($":");
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.Write($"~");
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write($"$ ");
+            return Console.ReadLine();
+        }
+       
+    }
 }

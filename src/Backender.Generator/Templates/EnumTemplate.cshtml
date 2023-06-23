@@ -1,0 +1,19 @@
+﻿@model Backender.Translator.Templates.EnumTemplate
+@{
+    string EnumName = Model.Enum_.EnumName;
+    string ProjectNameSpace = Model.Project.NameSpace;
+    string EnumNameSpace = ProjectNameSpace + ".Enums";
+}
+namespace @EnumNameSpace
+{
+    public enum @EnumName
+    {
+@foreach (var enumValue in Model.Enum_.EnumValues)
+{
+    <text>     @($"{enumValue.Name} = {enumValue.Value}")@(Model.Enum_.EnumValues.LastOrDefault() != enumValue ? $"," : string.Empty)
+</text>
+    
+
+}
+    }
+}

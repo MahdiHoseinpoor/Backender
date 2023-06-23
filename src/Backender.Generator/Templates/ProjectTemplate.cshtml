@@ -1,0 +1,42 @@
+﻿@model Backender.Translator.Templates.ProjectTemplate
+@{
+    var ReferenceProjects = Model.Project.ReferenceProjects;
+    var PackagesProjects = Model.Project.Packages;
+}
+<Project Sdk="@(Model.Project.SDK)">
+
+    <PropertyGroup>
+        <OutputType>Library</OutputType>
+        <TargetFramework>net7.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    @if (ReferenceProjects.Any())
+    {
+        <ItemGroup>
+            @foreach (var ReferenceProject in ReferenceProjects)
+            {
+                var FirstReferenceProjectFolderPath = ReferenceProject.Path.Split('/').First();
+                if (FirstReferenceProjectFolderPath == Model.Project.Path.Split('/').First())
+                {
+                  <ProjectReference Include="..\@(ReferenceProject.Name)\@(ReferenceProject.Name).csproj" />
+                }
+                else
+                {
+                  <ProjectReference Include="..\..\@(FirstReferenceProjectFolderPath)\@(ReferenceProject.Name)\@(ReferenceProject.Name).csproj" />
+                }
+            }
+        </ItemGroup>
+    }
+    @if (PackagesProjects.Any())
+    {
+        <ItemGroup>
+            @foreach (var PackagesProject in PackagesProjects)
+            {
+                <PackageReference Include="@PackagesProject.Name" Version="@PackagesProject.Version" />
+            }
+        </ItemGroup>
+    }
+
+</Project>

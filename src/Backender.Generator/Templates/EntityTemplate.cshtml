@@ -1,0 +1,112 @@
+﻿@using Backender.Translator.Handlers.ValidationControls;
+@using Backender.Translator.Handlers;
+@using Backender.Translator.Models;
+@using Backender.Generator;
+@model Backender.Translator.Templates.EntityTemplate
+@{
+    string ClassName = Model.CurrentTable.Name;
+    string ProjectNameSpace = Model.Project.NameSpace;
+    string ClassNameSpace = ProjectNameSpace + ".Domains" +  (!string.IsNullOrEmpty(Model.CurrentTable.Category) ? $".{Model.CurrentTable.Category}" : string.Empty);
+    var TableCategories = new List<string>();
+}
+@*//This Class Is Auto Generated with Backender, For get more Information check https://github.com/MahdiHoseinpoor/Backender*@
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+@if (ValidatorHandler.ValidationControl == ValidationControl.FluentValidation)
+{
+    <text>using FluentValidation;</text>
+}
+@foreach (var Relation in Model.CurrentTable.Relations)
+{
+    var relationTable = Model.Tables.FirstOrDefault(p => p.Name == Relation.TableName);
+    if (relationTable.Category != Model.CurrentTable.Category)
+    {
+        TableCategories.Add(relationTable.Category);
+    }
+}
+@foreach (var tableCategory in TableCategories.Distinct())
+{
+    <text>using @(ProjectNameSpace + ".Domains" + (!string.IsNullOrEmpty(tableCategory) ? $".{tableCategory}" : string.Empty));</text>
+}
+@if (Model.CurrentTable.Columns.Any(p=>p.IsEnum))
+{
+    <text>
+using @(ProjectNameSpace + ".Enums");</text>
+}
+
+namespace @ClassNameSpace
+{@{
+    var ParentClassName = string.Empty;
+     if (ClassName != "BaseEntity")
+    {
+        ParentClassName = "BaseEntity";
+    }
+}
+    public class @ClassName @(!string.IsNullOrEmpty(ParentClassName) ? $": {ParentClassName}" : string.Empty)
+    {
+@foreach (var Column in Model.CurrentTable.Columns)
+{
+    <text>
+        @{
+            bool IsKeyColumn = ClassName == "BaseEntity" && Column.Options.ParseOptions().GetValidationOptions().Any(p => p.Name == "key");
+        }
+        @if (ValidatorHandler.ValidationControl == ValidationControl.DataAnnotation)
+        {
+            @foreach (var option in Column.Options.ParseOptions().GetValidationOptions())
+            {
+<text>        @Html.Raw(DataAnnotationHandler.GetAttributeByOption(option))
+</text>
+            }
+        }
+        else if (IsKeyColumn)
+        {
+            <text>@Html.Raw(DataAnnotationHandler.GetAttributeByOption(Column.Options.ParseOptions().GetValidationOptions().FirstOrDefault(p=>p.Name == "key")))
+</text>
+        }
+        public @Column.DataType @Column.Name { get; set; } @(IsKeyColumn ? $"= Guid.NewGuid().ToString();" : string.Empty)
+    </text>
+}
+@foreach (var Relation in Model.CurrentTable.Relations)
+{
+    switch (Relation.RelationType)
+    {
+        case RelationType.ToMany:
+            <text>
+        public virtual IEnumerable<@Relation.TableName> @Relation.TableName.ToPlural() { get; set; }
+            </text>
+            break;
+        case RelationType.ToOne:
+            <text>
+@*                public @Relation.TableIdDataType @Relation.TableName { get; set; }*@
+        public string @(Relation.TableName)Id { get; set; }
+        [ForeignKey("@(Relation.TableName)Id")]
+        public virtual @Relation.TableName @Relation.TableName { get; set; }
+            </text>
+            break;
+        default:
+            break;
+    }
+    
+}
+
+    }
+@if (ValidatorHandler.ValidationControl == ValidationControl.FluentValidation)
+{
+<text>
+    public class @(ClassName)Validator : AbstractValidator<@ClassName>
+    {
+        public @(ClassName)Validator()
+        {
+        @foreach (var Column in Model.CurrentTable.Columns)
+        {
+<text>            RuleFor(x => x.@Column.Name)@foreach (var option in Column.Options.ParseOptions().GetValidationOptions())
+                    {
+                        <text>@Html.Raw(FluentValidationHandler.GetValidatorByOption(option))</text>
+                    };
+</text>
+        }
+        }
+    }
+</text>
+}
+}

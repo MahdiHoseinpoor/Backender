@@ -1,5 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net7.0</TargetFramework>
@@ -16,28 +15,22 @@
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
     <IncludeSymbols>False</IncludeSymbols>
     <PackageIcon>Logo.png</PackageIcon>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageVersion>1.2.1</PackageVersion>
+    <PackageVersion>2.0.0</PackageVersion>
   </PropertyGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Backender.CodeEditor.CSharp\Backender.CodeEditor.CSharp.csproj" />
-    <ProjectReference Include="..\Backender.CodeGenerator\Backender.CodeGenerator.csproj" />
-  </ItemGroup>
 
   <ItemGroup>
     <Folder Include="nupkg\" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\..\README.md">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
     <None Include="..\..\docs\Logo.png">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Backender.Translator\Backender.Translator.csproj" />
+    <ProjectReference Include="..\Backender.Generator\Backender.Generator.csproj" />
   </ItemGroup>
 
 </Project>

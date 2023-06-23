@@ -1,0 +1,42 @@
+﻿@model Backender.Translator.Templates.SolutionTemplate
+@{
+	var Projects = Model.Solution.Projects;
+	List<string> keys = new List<string>();
+	var Globalkey = Guid.NewGuid();
+
+}
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33213.308
+MinimumVisualStudioVersion = 10.0.40219.1
+@foreach (var Project in Projects)
+{
+	var key = Guid.NewGuid().ToString().ToUpper();
+	keys.Add(key);
+	<text>
+Project("{@Globalkey}") = "@Project.Name", "@(Project.Path)\@(Project.Name)\@(Project.Name).csproj", "{@key}"
+EndProject</text>
+}
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+@foreach (var key in keys)
+{
+	<text>
+		{@key}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{@key.)}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{@key}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{@key}.Release|Any CPU.Build.0 = Release|Any CPU</text>
+}
+	
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {@Guid.NewGuid().ToString().ToUpper()}
+	EndGlobalSection
+EndGlobal

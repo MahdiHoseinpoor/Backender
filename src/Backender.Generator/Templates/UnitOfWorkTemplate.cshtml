@@ -1,0 +1,117 @@
+﻿@using Backender.Generator;
+@using Backender.Translator.Handlers;
+@model Backender.Translator.Templates.UnitOfWorkTemplate
+@{
+    string ClassName ="UnitOfWork";
+    string ProjectNameSpace = Model.Project.NameSpace;
+    string ClassNameSpace = ProjectNameSpace;
+    var tables = Model.Tables.Where(p => !p.Options.HasOption("baseentity")).Distinct();
+    var fields = new List<string>();
+    var tableCategories = new List<string>();
+}
+using Microsoft.EntityFrameworkCore;
+using @Model.DataProject.NameSpace;
+using @Model.EntityProject.NameSpace;
+
+
+@foreach (var table in tables)
+{
+    tableCategories.Add(table.Category);
+}
+@foreach (var tableCategory in tableCategories.Distinct())
+{
+    <text>using @(Model.EntityProject.NameSpace + ".Domains" + (!string.IsNullOrEmpty(tableCategory) ? $".{tableCategory}" : string.Empty));
+using @(ProjectNameSpace + (!string.IsNullOrEmpty(tableCategory) ? $".{tableCategory}" : string.Empty));
+</text>
+
+}
+namespace @ClassNameSpace
+{
+    public class @ClassName : IDisposable
+    {
+        private ApplicationDbContext _context;
+        
+        public UnitOfWork(ApplicationDbContext Context)
+        {
+            _context = Context;
+        }
+@foreach (var table in tables)
+{
+    var serviceFieldName = (table.Name + "Service").ToFieldName();
+    var repoFieldName = (table.Name + "Repo").ToFieldName();
+<text>
+        @if (!table.Options.HasOption("MiddleEntity"))
+        {
+            <text>
+        private @(table.Name)Service @serviceFieldName;
+        public @(table.Name)Service @(table.Name)Service
+        {
+            get
+            {
+                if (@serviceFieldName == null)
+                {
+                    @serviceFieldName = new @(table.Name)Service(@repoFieldName@foreach (var middleEntityTable in table.MiddleEntities)
+        {
+            <text>,@((middleEntityTable.Name + "Repo").ToFieldName())</text>
+        });
+                }
+                return @serviceFieldName;
+            }
+        }
+            </text>
+        }
+        
+        private Repo<@table.Name> @repoFieldName;
+        public  Repo<@table.Name> @(table.Name)Repo
+        {
+            get
+            {
+                if (@repoFieldName == null)
+                {
+                    @repoFieldName = new Repo<@table.Name>(_context);
+                }
+                return @repoFieldName;
+            }
+        }
+        </text>
+}
+@foreach (var category in Model.Tables.Select(p => p.Category).Distinct())
+{
+    if (Model.Tables.Where(p => p.Category == category).Any(p => p.IsNormalEntity()))
+    {
+        var fieldName = (category + "DtosFactory").ToFieldName();
+        var Constructors = Model.Project.GetFileByName($"{category}DtosFactory").GetConstructors();
+        var ConstructorParameters = Constructors.MaxBy(p => p.ParameterList.Parameters.Count()).ParameterList.Parameters;
+        <text>
+        private @(category)DtosFactory @fieldName;
+        public @(category)DtosFactory @(category)DtosFactory
+        {
+            get
+            {
+                if (@fieldName == null)
+                {
+                     @fieldName = new @(category)DtosFactory(@(string.Join(',', ConstructorParameters.Select(p=>p.Type))));
+                }
+                return @fieldName;
+            }
+        }</text>
+    }
+}
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (_context != null)
+                {
+                    _context.Dispose();
+                    _context = null;
+                }
+            }
+        }
+    }
+}

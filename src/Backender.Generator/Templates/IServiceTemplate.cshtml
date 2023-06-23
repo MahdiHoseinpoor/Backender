@@ -1,0 +1,40 @@
+﻿@using Backender.Translator.Handlers;
+@using Backender.Generator;
+@using Backender.Translator.Models;
+@model Backender.Translator.Templates.IServiceTemplate
+@{
+    string TableName = Model.Table.Name;
+
+    string InterfaceName = $"I{Model.Table.Name}Service";
+    string ProjectNameSpace = Model.Project.NameSpace;
+    string InterfaceNameSpace = ProjectNameSpace + (!string.IsNullOrEmpty(Model.Table.Category) ? $".{Model.Table.Category}" : string.Empty);
+
+}
+using @Model.EntityProject.NameSpace;
+using @Model.DbContextProject.NameSpace;
+using @Model.EntityProject.GetNameSpaceOfFile(TableName);
+using Microsoft.EntityFrameworkCore;
+namespace @InterfaceNameSpace
+{
+    public interface @InterfaceName
+    {
+        public IList<@TableName> GetAll@(@TableName.ToPlural())();
+        public @TableName Get@(@TableName)ById(string id);
+        public bool Insert@(@TableName)(@TableName @TableName.ToLower());
+        public bool Update@(@TableName)(@TableName @TableName.ToLower());
+        public bool Delete@(@TableName)(@TableName @TableName.ToLower());
+        public bool Delete@(@TableName)(string id);
+        @foreach (var middleEntityTable in Model.Table.MiddleEntities)
+        {
+       <text>
+        public IList<@middleEntityTable.Name> Get@(middleEntityTable.Name.ToPlural())By@(middleEntityTable.DataBag["Entity1"])Id(string @(middleEntityTable.DataBag["Entity1"].ToLower())Id);
+        public IList<@middleEntityTable.Name> Get@(middleEntityTable.Name.ToPlural())By@(middleEntityTable.DataBag["Entity2"])Id(string @(middleEntityTable.DataBag["Entity2"].ToLower())Id);
+        public @middleEntityTable.Name Get@(middleEntityTable.Name)ById(string id);
+        public bool Insert@(middleEntityTable.Name)(@middleEntityTable.Name @middleEntityTable.Name.ToLower());
+        public bool Update@(middleEntityTable.Name)(@middleEntityTable.Name @middleEntityTable.Name.ToLower());
+        public bool Delete@(middleEntityTable.Name)(@middleEntityTable.Name @middleEntityTable.Name.ToLower());
+        public bool Delete@(middleEntityTable.Name)(string id);
+     </text>
+        }
+    }
+}

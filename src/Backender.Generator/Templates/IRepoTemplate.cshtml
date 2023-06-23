@@ -1,0 +1,29 @@
+﻿@model Backender.Translator.Templates.IRepoTemplate
+@{
+    string ProjectNameSpace = Model.Project.NameSpace;
+    string ClassNameSpace = ProjectNameSpace;
+}
+using @Model.Project.NameSpace;
+using @Model.EntityProject.NameSpace;
+using @(Model.EntityProject.NameSpace).Domains;
+using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
+
+namespace @ClassNameSpace
+{  
+    public interface IRepo<TEntity>
+    {
+        public IEnumerable<TEntity> GetAll(Expression<Func<TEntity, bool>> where=null,
+            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderby = null,
+            string includes = "",
+            char includesSplitChar = ',');
+        public bool Any(Expression<Func<TEntity, bool>> predicate = null);
+        public TEntity GetById(string id);
+        public bool Insert(TEntity model);
+        public bool Update(TEntity model);
+        public bool Delete(TEntity model);
+        public bool Delete(string id);
+ 
+        public bool Save();
+    }
+}

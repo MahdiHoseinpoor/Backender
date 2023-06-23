@@ -1,0 +1,146 @@
+﻿@using Backender.Translator.Handlers;
+@using Backender.Translator.Handlers.CSharpHelpers;
+@using Backender.Translator.Models;
+@using Backender.Generator;
+@model Backender.Translator.Templates.DtoFactoryTemplate
+@{
+    string ClassName =Model.TableCategory + "DtosFactory";
+    var DtoFactoryTables = Model.Tables.Where(p => p.Category == Model.TableCategory && p.IsNormalEntity()).ToList();
+    string ProjectNameSpace = Model.Project.NameSpace;
+    string ClassNameSpace = ProjectNameSpace + (!string.IsNullOrEmpty(Model.TableCategory) ? $".{Model.TableCategory}" : string.Empty);
+    var Constructor = ConstructorHandler.CreateConstructor();
+    var relationTableCategories = new List<string>();
+    var relationTables = new List<string>();
+}
+using @(Model.EntityProject.NameSpace).Domains@((!string.IsNullOrEmpty(Model.TableCategory) ? $".{Model.TableCategory}" : string.Empty));
+using @(Model.EntityProject.NameSpace).Dtos@((!string.IsNullOrEmpty(Model.TableCategory) ? $".{Model.TableCategory}" : string.Empty));
+@{
+    var ListOfrelations = Model.Tables.Select(p => p.Relations).Where(p => p.Any(p => p.RelationType == RelationType.ToOne && Model.Tables.FirstOrDefault(x => x.Name == p.TableName).Category != Model.TableCategory));
+    var usingNamespaces = new List<string>();
+    foreach (var relations in ListOfrelations)
+    {
+        foreach (var relation in relations)
+        {
+            var relationtablecategory = Model.Tables.FirstOrDefault(x => x.Name == relation.TableName).Category;
+            usingNamespaces.Add($"using {Model.Project.NameSpace}{(!string.IsNullOrEmpty(relationtablecategory) ? $".{relationtablecategory}" : string.Empty)};");
+        }
+    }
+}
+@Html.Raw(System.Web.HttpUtility.HtmlEncode(string.Join("\n", usingNamespaces.Distinct())))
+
+
+namespace @ClassNameSpace
+{
+    public class @ClassName
+    {
+        #region PrepareMethods
+        @foreach (var table in DtoFactoryTables)
+        {
+<text>
+            #region @(table.Name)</text> 
+<text>
+        public @(table.Name)Dto Prepare@(table.Name)Dto(@(table.Name) @(table.Name.ToLower()))
+        {
+            var @(table.Name.ToLower())Dto = new @(table.Name)Dto()
+            {
+                @foreach (var column in table.Columns)
+                {<text>
+                @column.Name = @(table.Name.ToLower()).@(column.Name)@(table.Columns.LastOrDefault() != column ? "," : string.Empty)
+</text>                }
+            };
+        @foreach (var Relation in table.Relations)
+        {
+           string relationTableCategory =  Model.Tables.FirstOrDefault(p => p.Name == Relation.TableName).Category;
+            relationTableCategory = string.IsNullOrEmpty(relationTableCategory) ? string.Empty : relationTableCategory;
+            switch (Relation.RelationType)
+            {
+                case RelationType.ToMany:
+                    break;
+                case RelationType.ToOne:
+                    var isRelationTableCategoryEqualModelTableCategory = relationTableCategory == Model.TableCategory;
+                    string DtofactoryName;
+                    if (!isRelationTableCategoryEqualModelTableCategory)
+                    {
+                        relationTableCategories.Add(relationTableCategory);
+                        Constructor.AddParameterToConstructor(relationTableCategory + "DtosFactory", relationTableCategory + "DtosFactory");
+                    }
+                    relationTables.Add(Relation.TableName);
+                    Constructor.AddParameterToConstructor(Relation.TableName + "Service", Relation.TableName + "Service");
+                    @if (!string.IsNullOrEmpty(relationTableCategory))
+                    {
+                        DtofactoryName = $"{relationTableCategory.ToFieldName()}DtosFactory.";
+                    }
+                    else
+                    {
+                        DtofactoryName = $"_dtosFactory.";
+                    }
+                    <text>
+                        @(table.Name.ToLower())Dto.@(Relation.TableName)Dto = @(!isRelationTableCategoryEqualModelTableCategory ? DtofactoryName : string.Empty)Prepare@(Relation.TableName)Dto(@(Relation.TableName.ToFieldName())Service.Get@(Relation.TableName)ById(@(table.Name.ToLower()).@(Relation.TableName)Id));
+                    </text>
+                    break;
+                default:
+                    break;
+            }
+        }
+            
+            return @(table.Name.ToLower())Dto;
+        }
+        public List<@(table.Name)Dto> Prepare@(table.Name)Dto(List<@(table.Name)> @(table.Name.ToPlural()))
+        {
+            var @(table.Name.ToLower())Dtos = new List<@(table.Name)Dto>();
+            foreach (var @(table.Name.ToLower()) in @(table.Name.ToPlural()))
+            {
+                    @(table.Name.ToLower())Dtos.Add(Prepare@(table.Name)Dto(@(table.Name.ToLower())));
+            }
+            return @(table.Name.ToLower())Dtos;
+        }
+            </text>
+<text>
+           #endregion
+</text>
+        }
+        #endregion
+        #region fields
+@foreach (var constructorParameter in Constructor.Parameters.DistinctBy(p=>p.Name))
+{
+    <text>        public @constructorParameter.DataType @constructorParameter.Name.ToFieldName();
+</text>
+        }
+
+        #endregion
+
+        #region ctor
+@{
+    var ConstructorParameter = new List<string>();
+    foreach (var constructorParameter in Constructor.Parameters.DistinctBy(p => p.Name))
+    {
+        ConstructorParameter.Add(constructorParameter.DataType + " " + constructorParameter.Name);
+    }
+}
+
+        public @(ClassName)(@string.Join(',',ConstructorParameter))
+        {
+@foreach (var constructorParameter in Constructor.Parameters.DistinctBy(p => p.Name))
+{
+    <text>        @constructorParameter.Name.ToFieldName() = @constructorParameter.Name;
+</text>
+    
+            }
+        }
+        @*public @(ClassName)(@foreach (var relationTableCategory in relationTableCategories){<text>@(relationTableCategory)DtosFactory @(relationTableCategory)DtosFactory,
+</text>}@foreach (var relationTable in relationTables){<text>@(relationTable)Service @(relationTable)Service@(relationTables.LastOrDefault() != relationTable ? $"," : string.Empty)
+</text>})
+        {
+@foreach (var relationTableCategory in relationTableCategories)
+{
+<text>            _@(relationTableCategory.ToLower())DtosFactory = @(relationTableCategory)DtosFactory;</text>
+}
+@foreach (var relationTable in relationTables)
+{
+<text>            _@(relationTable.ToLower())Service = @(relationTable)Service;</text>
+}*@
+          
+        #endregion
+        
+    }
+}

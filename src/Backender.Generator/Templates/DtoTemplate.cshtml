@@ -1,0 +1,62 @@
+﻿@using Backender.Translator.Handlers;
+@using Backender.Translator.Models;
+@using Backender.Generator;
+@model Backender.Translator.Templates.DtoTemplate
+@{
+    string ClassName = (!Model.CurrentTable.Options.HasOption("baseentity") ? $"{Model.CurrentTable.Name}" : "BaseDto"); ;
+    string ProjectNameSpace = Model.Project.NameSpace;
+    string ClassNameSpace = ProjectNameSpace + ".Dtos" + (!string.IsNullOrEmpty(Model.CurrentTable.Category) ? $".{Model.CurrentTable.Category}" : string.Empty);
+    var TableCategories = new List<string>();
+}
+@*//This Class Is Auto Generated with Backender, For get more Information check https://github.com/MahdiHoseinpoor/Backender*@
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+@foreach (var Relation in Model.CurrentTable.Relations)
+{
+    var relationTable = Model.Tables.FirstOrDefault(p => p.Name == Relation.TableName);
+    if (relationTable.Category != Model.CurrentTable.Category)
+    {
+        TableCategories.Add(relationTable.Category);
+    }
+}
+@foreach (var tableCategory in TableCategories.Distinct())
+{
+    <text>using @(ProjectNameSpace + ".Dtos" + (!string.IsNullOrEmpty(tableCategory) ? $".{tableCategory}" : string.Empty));</text>
+}
+@if (Model.CurrentTable.Columns.Any(p => p.IsEnum))
+{
+    <text>
+using @(ProjectNameSpace + ".Enums");</text>
+}
+
+namespace @ClassNameSpace
+{
+    public class @(ClassName)@(ClassName != "BaseDto" ? "Dto : BaseDto" : string.Empty)
+    {
+@foreach (var Column in Model.CurrentTable.Columns)
+{
+    <text>
+@*        @AddEntityAttributes(Column.Options)
+*@        public @Column.DataType @Column.Name { get; set; }
+    </text>
+}
+@foreach (var Relation in Model.CurrentTable.Relations)
+{
+    switch (Relation.RelationType)
+    {
+        case RelationType.ToMany:
+            //witch Properties is that needs for ToManyRelation!
+            break;
+        case RelationType.ToOne:
+            <text>
+        public @(Relation.TableName)Dto @(Relation.TableName)Dto { get; set; }
+            </text>
+            break;
+        default:
+            break;
+    }
+    
+}
+
+    }
+}
