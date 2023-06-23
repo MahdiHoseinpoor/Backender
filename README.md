@@ -58,5 +58,9 @@ Backender is an open source project in C# language that uses a Blueprint file to
 <RelationShip Entity1="Category" Entity2="Post" Type="O2M"/>
 <GlobalOption Id="ShortString" EntityCols="root.Title, Post.All(), Post.Comment" Options="Length(0,250) required"/>
 </Domains>
+```
+### More Informations
+https://medium.com/@mahdihoseinpoor/introducing-backender-2-enhanced-speed-blueprints-validations-and-more-b91d64c59741
+https://medium.com/@mahdihoseinpoor/blueprint-the-only-thing-that-backender-needs-61128924aa5c
 </Blueprint>
     
