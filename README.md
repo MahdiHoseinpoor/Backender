@@ -6,6 +6,12 @@
 ### Backender
 Backender is an open source project in C# language that uses a config file to create the backend of your site in the repository pattern (yet!).
 
+## Nuget Packages
+
+| Package | NuGet Stable |  Downloads |
+| ------- | -------- | ------- |
+| [Backender.CLI](https://www.nuget.org/packages/Backender.CLI/) | [![Backender.CLI](https://img.shields.io/nuget/v/Backender.CLI.svg)](https://www.nuget.org/packages/Backender.CLI/)  | [![Backender.CLI](https://img.shields.io/nuget/dt/Backender.CLI.svg)](https://www.nuget.org/packages/Backender.CLI/) |
+
 ### Getting Started
 
 1. Install from .NET Core Global Tool  
@@ -26,8 +32,6 @@ Backender is an open source project in C# language that uses a config file to cr
 
 ### Sample of config file in yaml
 ``` yaml
-SolutionName: GoBlog
-SoltionNameSpace: GoBlog
 SolutionName: GoBlog
 SoltionNameSpace: GoBlog
 Domains:
