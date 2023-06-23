@@ -1,0 +1,19 @@
+﻿<Blueprint>
+  <Solution Name="Hotelino" Namespace="Hotelino"/>
+  <Reference Href="Rooms.xml" Type="Partial/blueprint"/>
+  <Reference Href="Financial.xml" Type="Partial/blueprint"/>
+  <Reference Href="Employees.xml" Type="Partial/blueprint"/>
+  <Reference Href="Blog.xml" Type="Partial/blueprint"/>
+  <Domains>
+    <Entity Name="Customer" Category="Administrative">
+      <Col Name="FirstName" Type="string"/>
+      <Col Name="LastName" Type="string"/>
+      <Col Name="Address" Type="string" options="-r -l(0,1000)"/>
+      <Col Name="Email" Type="string"/>
+    </Entity>
+    <RelationShip Entity1="Customer" Entity2="Transaction" Type="O2M"/>
+    <RelationShip Entity1="Employees" Entity2="Transaction" Type="O2M"/>
+    <GlobalOption EntityCols="root.Email" Options="-e -r"/>
+    <GlobalOption EntityCols="Customer.All(), Post.Author, Employees.FirstName, Employees.LastName, root.Name ,root.Title" Options="-r -l(0,250)"/>
+  </Domains>
+</Blueprint>

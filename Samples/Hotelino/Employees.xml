@@ -1,0 +1,17 @@
+﻿<Blueprint>
+  <Solution Name="Hotelino" Namespace="Hotelino"/>
+  <Domains>
+    <Entity Name="Employees" Category="Administrative">
+      <Col Name="FirstName" Type="string"/>
+      <Col Name="LastName" Type="string"/>
+      <Col Name="Address" Type="string"/>
+      <Col Name="Email" Type="string"/>
+      <Col Name="username" Type="string"/>
+      <Col Name="HashedPasswords" Type="string"/>
+    </Entity>
+    <Entity Name="JobDepartment" Category="Administrative">
+      <Col Name="title" Type="string"/>
+    </Entity>
+    <RelationShip Entity1="JobDepartment" Entity2="Employees" Type="O2M"/>
+  </Domains>
+</Blueprint>

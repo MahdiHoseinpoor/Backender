@@ -1,0 +1,18 @@
+﻿<Blueprint>
+  <Solution Name="Hotelino" Namespace="Hotelino"/>
+  <Domains>
+    <Entity Name="Transaction" Category="Financial">
+      <Col Name="Name" Type="string"/>
+      <Col Name="transaction_date" Type="DateTime" options="-r"/>
+    </Entity>
+    <Entity Name="Payment" Category="Financial">
+      <Col Name="Payments_date" Type="DateTime" options="-r"/>
+    </Entity>
+    <Entity Name="Report" Category="Financial">
+      <Col Name="information" Type="string" options="-r"/>
+      <Col Name="date" Type="DateTime" options="-r"/>
+    </Entity>
+    <RelationShip Entity1="Payment" Entity2="Transaction" Type="O2M"/>
+    <RelationShip Entity1="Transaction" Entity2="Report" Type="O2M"/>
+  </Domains>
+</Blueprint>

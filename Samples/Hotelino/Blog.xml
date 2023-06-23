@@ -1,0 +1,27 @@
+﻿<Blueprint>
+  <Solution Name="Hotelino" Namespace="Hotelino"/>
+  <Domains>
+    <Enum Name="CommentStatus">
+      <EnumValue Name="Pending" Value="1"/>
+      <EnumValue Name="Accepted" Value="2"/>
+      <EnumValue Name="Failed" Value="3"/>
+    </Enum>
+    <Entity Name="Post"  Category="Blog">
+      <Col Name="Title" Type="string"/>
+      <Col Name="Author" Type="string"/>
+      <Col Name="Content" Type="string" options="-r"/>
+    </Entity>
+    <Entity Name="Comment"  Category="Blog">
+      <Col Name="Name" Type="string"/>
+      <Col Name="CommentStatus" Type="CommentStatus"/>
+      <Col Name="Email" Type="string"/>
+      <Col Name="Content" Type="string" options="-r"/>
+    </Entity>
+    <Entity Name="Category"  Category="Blog">
+      <Col Name="Title" Type="string"/>
+      <Col Name="Description" Type="string" options="-r"/>
+    </Entity>
+    <RelationShip Entity1="Post" Entity2="Comment" Type="O2M"/>
+    <RelationShip Entity1="Category" Entity2="Post" Type="O2M"/>
+  </Domains>
+</Blueprint>

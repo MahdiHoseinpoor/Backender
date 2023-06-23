@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Library</OutputType>
+        <TargetFramework>net7.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+        <ItemGroup>
+                  <ProjectReference Include="..\Hotelino.Core\Hotelino.Core.csproj" />
+                  <ProjectReference Include="..\Hotelino.Data\Hotelino.Data.csproj" />
+        </ItemGroup>
+        <ItemGroup>
+                <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.5" />
+        </ItemGroup>
+
+</Project>

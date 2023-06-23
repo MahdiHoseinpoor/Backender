@@ -1,0 +1,13 @@
+﻿<Blueprint>
+  <Solution Name="Hotelino" Namespace="Hotelino"/>
+  <Domains>
+    <Entity Name="RoomClass" Category="Rooms">
+      <Col Name="Name" Type="string"/>
+    </Entity>
+    <Entity Name="Room" Category="Rooms">
+      <Col Name="Description" Type="string" options="-r"/>
+      <Col Name="Price" Type="float" options="-r"/>
+    </Entity>
+    <RelationShip Entity1="RoomClass" Entity2="Room" Type="O2M"/>
+  </Domains>
+</Blueprint>
