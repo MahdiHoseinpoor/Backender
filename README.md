@@ -4,7 +4,7 @@
 </p>
 
 ### Backender
-Backender is an open source project in C# language that uses a config file to create the backend of your site in the repository pattern (yet!).
+Backender is an open source project in C# language that uses a Blueprint file to create the backend of your site in the repository pattern (yet!).
 
 ## Nuget Packages
 
