@@ -23,7 +23,7 @@ namespace Backender.Cli
        ╚═════╝░╚═╝░░╚═╝░╚════╝░╚═╝░░╚═╝╚══════╝╚═╝░░╚══╝╚═════╝░╚══════╝╚═╝░░╚═╝";
         const string Information =
 @"
- Backender.Cli v2.0.0
+ Backender.Cli v2.0.1
  Created by: Mahdi Hoseinpoor
 ";
 
@@ -86,12 +86,8 @@ namespace Backender.Cli
                             Console.BackgroundColor = DefaultBackgroundColor;
                             if (BlueprintCompiler.Messages.Any(p => p.MessageType == MessageType.Error))
                             {
-#if DEBUG
-                            Console.ReadKey();
-                            Environment.Exit(0);
-#else
+                                BlueprintCompiler.Messages.Clear();
                                 continue;
-#endif
                             }
                         }
 

@@ -36,6 +36,7 @@ namespace @ClassNameSpace
         #region PrepareMethods
         @foreach (var table in DtoFactoryTables)
         {
+
 <text>
             #region @(table.Name)</text> 
 <text>
@@ -43,9 +44,12 @@ namespace @ClassNameSpace
         {
             var @(table.Name.ToLower())Dto = new @(table.Name)Dto()
             {
+                Id = city.id,
+                CreatedAt_ = city.CreatedAt_,
+                ModifiedAt_ = city.ModifiedAt_
                 @foreach (var column in table.Columns)
                 {<text>
-                @column.Name = @(table.Name.ToLower()).@(column.Name)@(table.Columns.LastOrDefault() != column ? "," : string.Empty)
+                ,@column.Name = @(table.Name.ToLower()).@(column.Name)
 </text>                }
             };
         @foreach (var Relation in table.Relations)
