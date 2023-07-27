@@ -17,7 +17,7 @@ Backender is an open-source project written in C# that creates the backend of yo
 1. Install from .NET Core Global Tool  
 
   ``` shell
-    dotnet tool install --global Backender.CLI --version 2.0.0
+    dotnet tool install --global Backender.CLI --version 2.0.1
   ```
 
 2. Create or edit Blueprint file
