@@ -23,7 +23,7 @@ namespace Backender.Cli
        ╚═════╝░╚═╝░░╚═╝░╚════╝░╚═╝░░╚═╝╚══════╝╚═╝░░╚══╝╚═════╝░╚══════╝╚═╝░░╚═╝";
         const string Information =
 @"
- Backender.Cli v2.0.1
+ Backender.Cli v2.0.2
  Created by: Mahdi Hoseinpoor
 ";
 

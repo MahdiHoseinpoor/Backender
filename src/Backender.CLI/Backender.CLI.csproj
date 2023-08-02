@@ -15,7 +15,7 @@
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
     <IncludeSymbols>False</IncludeSymbols>
     <PackageIcon>Logo.png</PackageIcon>
-    <PackageVersion>2.0.1</PackageVersion>
+    <PackageVersion>2.0.2</PackageVersion>
   </PropertyGroup>
 
   <ItemGroup>

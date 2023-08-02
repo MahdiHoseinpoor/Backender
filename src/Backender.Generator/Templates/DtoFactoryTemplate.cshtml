@@ -44,9 +44,9 @@ namespace @ClassNameSpace
         {
             var @(table.Name.ToLower())Dto = new @(table.Name)Dto()
             {
-                Id = city.id,
-                CreatedAt_ = city.CreatedAt_,
-                ModifiedAt_ = city.ModifiedAt_
+                Id = @(table.Name.ToLower()).Id,
+                CreatedAt_ = @(table.Name.ToLower()).CreatedAt_,
+                ModifiedAt_ = @(table.Name.ToLower()).ModifiedAt_
                 @foreach (var column in table.Columns)
                 {<text>
                 ,@column.Name = @(table.Name.ToLower()).@(column.Name)

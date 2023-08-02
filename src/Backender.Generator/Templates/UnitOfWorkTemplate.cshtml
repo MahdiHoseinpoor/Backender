@@ -38,7 +38,7 @@ namespace @ClassNameSpace
 @foreach (var table in tables)
 {
     var serviceFieldName = (table.Name + "Service").ToFieldName();
-    var repoFieldName = (table.Name + "Repo").ToFieldName();
+    var repoFieldName = (table.Name + "Repo");
 <text>
         @if (!table.Options.HasOption("MiddleEntity"))
         {
@@ -52,7 +52,7 @@ namespace @ClassNameSpace
                 {
                     @serviceFieldName = new @(table.Name)Service(@repoFieldName@foreach (var middleEntityTable in table.MiddleEntities)
         {
-            <text>,@((middleEntityTable.Name + "Repo").ToFieldName())</text>
+            <text>,@((middleEntityTable.Name + "Repo"))</text>
         });
                 }
                 return @serviceFieldName;
@@ -62,7 +62,7 @@ namespace @ClassNameSpace
         }
         
         private Repo<@table.Name> @repoFieldName;
-        public  Repo<@table.Name> @(table.Name)Repo
+        private  Repo<@table.Name> @(table.Name)Repo
         {
             get
             {
