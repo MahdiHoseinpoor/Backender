@@ -4,8 +4,15 @@
 </p>
 
 ### Backender
-Backender is an open-source project written in C# that creates the backend of your site based on a Blueprint file using the repository pattern.
+Backender is a dynamic open-source project crafted in C#. It empowers your website by automating the creation of its backend infrastructure using the repository pattern. With Backender, you can swiftly and efficiently develop a robust backend, transforming your vision into reality.
+If you've found Backender valuable and wish to [support](#donate-and-support) our project, consider making a donation to help us continue our mission of simplifying web development. Thank you for your support!
 
+### Table of Contents
+- [Nuget Packages](#nuget-packages)
+- [Getting Started](#getting-started)
+- [Sample of Blueprint File](#sample-of-blueprint-file)
+- [More Information](#more-information)
+- [Donate and support](#donate-and-support)
 ## Nuget Packages
 
 | Package | NuGet Stable |  Downloads |
@@ -95,12 +102,15 @@ Backender is an open-source project written in C# that creates the backend of yo
       - `<GlobalOption>`: Sets global options for entity columns, allowing the application of options to multiple columns at once. It has the following attributes:
          - `EntityCols` (required): Specifies the target columns to which the options should be applied.
          - `Options` (required): Specifies the options to be applied to the target columns.
-### More Informations
+### More Information
 [Introducing Backender 2: Enhanced Speed, Blueprints, Validations, and More](https://medium.com/@mahdihoseinpoor/introducing-backender-2-enhanced-speed-blueprints-validations-and-more-b91d64c59741)
 
 [Blueprint: The Only Thing That Backender Needs](https://medium.com/@mahdihoseinpoor/blueprint-the-only-thing-that-backender-needs-61128924aa5c)
 
-### Donate
-for Iranian People: https://idpay.ir/thisismahdihoseinpoor
+### Donate and support
+| Cryptocurrency | Wallet Address               |
+| --------------- | ---------------------------- |
+| Bitcoin (BTC)   | bc1qcdnksnj6qs9x8ev6kuenq22c8lvmxt9gc6yace        |
+| Binance Coin (BNB) and Ethereum (ETH) | 0x088d6068372087757cd50D301503302F16930F09      |
 
     
