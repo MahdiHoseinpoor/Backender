@@ -110,6 +110,6 @@ If you've found Backender valuable and wish to [support](#donate-and-support) ou
 ### Donate and support
 We greatly appreciate your support for the Backender project. Your contributions help us continue our mission of simplifying web development. If you've found Backender valuable and want to contribute, please consider making a donation to help us in this endeavor. Every contribution, no matter how big or small, goes a long way in supporting our open-source project. Thank you for being a part of our community.
 
-My Public Address to Receive USDT: `0x088d6068372087757cd50D301503302F16930F09`
+My Public Address to Receive USDT and BNB: `0x088d6068372087757cd50D301503302F16930F09`
 
     
