@@ -108,9 +108,7 @@ If you've found Backender valuable and wish to [support](#donate-and-support) ou
 [Blueprint: The Only Thing That Backender Needs](https://medium.com/@mahdihoseinpoor/blueprint-the-only-thing-that-backender-needs-61128924aa5c)
 
 ### Donate and support
-| Cryptocurrency | Wallet Address               |
-| --------------- | ---------------------------- |
-| Bitcoin (BTC)   | bc1qcdnksnj6qs9x8ev6kuenq22c8lvmxt9gc6yace        |
-| Binance Coin (BNB) and Ethereum (ETH) | 0x088d6068372087757cd50D301503302F16930F09      |
+We greatly appreciate your support for the Backender project. Your contributions help us continue our mission of simplifying web development. If you've found Backender valuable and want to contribute, please consider making a donation to help us in this endeavor. Every contribution, no matter how big or small, goes a long way in supporting our open-source project. Thank you for being a part of our community.
+My Public Address to Receive USDT: `0x088d6068372087757cd50D301503302F16930F09`
 
     
