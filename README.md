@@ -5,14 +5,12 @@
 
 ### Backender
 Backender is a dynamic open-source project crafted in C#. It empowers your website by automating the creation of its backend infrastructure using the repository pattern. With Backender, you can swiftly and efficiently develop a robust backend, transforming your vision into reality.
-If you've found Backender valuable and wish to [support](#donate-and-support) our project, consider making a donation to help us continue our mission of simplifying web development. Thank you for your support!
 
 ### Table of Contents
 - [Nuget Packages](#nuget-packages)
 - [Getting Started](#getting-started)
 - [Sample of Blueprint File](#sample-of-blueprint-file)
 - [More Information](#more-information)
-- [Donate and support](#donate-and-support)
 ## Nuget Packages
 
 | Package | NuGet Stable |  Downloads |
@@ -106,10 +104,5 @@ If you've found Backender valuable and wish to [support](#donate-and-support) ou
 [Introducing Backender 2: Enhanced Speed, Blueprints, Validations, and More](https://medium.com/@mahdihoseinpoor/introducing-backender-2-enhanced-speed-blueprints-validations-and-more-b91d64c59741)
 
 [Blueprint: The Only Thing That Backender Needs](https://medium.com/@mahdihoseinpoor/blueprint-the-only-thing-that-backender-needs-61128924aa5c)
-
-### Donate and support
-We greatly appreciate your support for the Backender project. Your contributions help us continue our mission of simplifying web development. If you've found Backender valuable and want to contribute, please consider making a donation to help us in this endeavor. Every contribution, no matter how big or small, goes a long way in supporting our open-source project. Thank you for being a part of our community.
-
-My Public Address to Receive USDT and BNB: `0x088d6068372087757cd50D301503302F16930F09`
 
     
