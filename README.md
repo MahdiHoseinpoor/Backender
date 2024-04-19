@@ -1,6 +1,6 @@
 
 <p align="center" style="margin-top: 10px;">
-  <img width="100"src="./docs/Logo.png"/>
+  <img src="./docs/Banner.jpg"/>
 </p>
 
 ### Backender
