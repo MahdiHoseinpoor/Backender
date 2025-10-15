@@ -6,6 +6,10 @@
 
 Backender is a powerful open-source C# tool that automates the creation of your website's backend infrastructure. By utilizing the repository pattern and a simple XML blueprint file, Backender allows you to rapidly generate a robust and scalable backend, saving you valuable development time.
 
+| Package | NuGet Stable |  Downloads |
+| ------- | -------- | ------- |
+| [Backender.CLI](https://www.nuget.org/packages/Backender.CLI/) | [![Backender.CLI](https://img.shields.io/nuget/v/Backender.CLI.svg)](https://www.nuget.org/packages/Backender.CLI/)  | [![Backender.CLI](https://img.shields.io/nuget/dt/Backender.CLI.svg)](https://www.nuget.org/packages/Backender.CLI/) |
+
 ## Table of Contents
 - [About The Project](#about-the-project)
 - [Getting Started](#getting-started)
