@@ -1,12 +1,12 @@
 ﻿using Backender.Translator;
 using Backender.Generator;
 using Backender.Generator.Templates;
-using Backender.Translator.Models;
+using Backender.Core.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Razor.Templating.Core;
 using System.Reflection;
-using File = Backender.Translator.Models.File;
+using File = Backender.Core.Models.File;
 
 namespace Backender.Translator.Templates
 {

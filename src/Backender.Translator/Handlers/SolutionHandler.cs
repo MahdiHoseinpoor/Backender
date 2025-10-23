@@ -1,11 +1,11 @@
-﻿using Backender.Translator.Models;
+﻿using Backender.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using File = Backender.Translator.Models.File;
+using File = Backender.Core.Models.File;
 
 namespace Backender.Translator.Handlers
 {

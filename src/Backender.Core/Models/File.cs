@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Backender.Translator.Models
+namespace Backender.Core.Models
 {
     public class File
     {

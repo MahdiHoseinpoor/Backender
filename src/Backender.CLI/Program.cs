@@ -2,10 +2,10 @@
 using Backender.Translator.Handlers;
 using Backender.Generator;
 using Backender.Translator.Handlers;
-using Backender.Translator.Models;
+using Backender.Core.Models;
 using System.Text.Json;
 using File = System.IO.File;
-using File_ = Backender.Translator.Models.File;
+using File_ = Backender.Core.Models.File;
 using System.Text;
 using System.Xml;
 

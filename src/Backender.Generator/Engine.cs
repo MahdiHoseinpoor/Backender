@@ -2,7 +2,7 @@
 using Backender.Translator.Handlers;
 using Backender.Generator.Templates;
 
-using Backender.Translator.Models;
+using Backender.Core.Models;
 using Backender.Translator.Templates;
 using System;
 using System.Collections.Generic;
@@ -13,7 +13,7 @@ using System.Reflection.Emit;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
-using File = Backender.Translator.Models.File;
+using File = Backender.Core.Models.File;
 
 namespace Backender.Generator
 {

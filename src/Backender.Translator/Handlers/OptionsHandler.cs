@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Backender.Translator.Models;
+using Backender.Core.Models;
 namespace Backender.Translator.Handlers
 {
 

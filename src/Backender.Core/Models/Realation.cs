@@ -1,4 +1,4 @@
-﻿namespace Backender.Translator.Models
+﻿namespace Backender.Core.Models
 {
     public class Relation
     {

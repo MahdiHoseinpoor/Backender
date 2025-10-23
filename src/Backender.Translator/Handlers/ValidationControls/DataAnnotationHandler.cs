@@ -1,4 +1,4 @@
-﻿using Backender.Translator.Models;
+﻿using Backender.Core.Models;
 using Microsoft.VisualBasic.FileIO;
 using System;
 using System.Collections.Generic;

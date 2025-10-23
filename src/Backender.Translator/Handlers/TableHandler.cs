@@ -1,6 +1,6 @@
 ﻿using Backender.Translator;
 using Backender.Translator.Handlers;
-using Backender.Translator.Models;
+using Backender.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
