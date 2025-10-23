@@ -1,170 +1,98 @@
-﻿using Backender.Translator;
-using Backender.Translator.Handlers;
-using Backender.Generator;
-using Backender.Translator.Handlers;
-using Backender.Core.Models;
-using System.Text.Json;
-using File = System.IO.File;
-using File_ = Backender.Core.Models.File;
-using System.Text;
-using System.Xml;
+﻿using Backender.Cli.Commands;
+using System;
+using System.CommandLine;
+using System.CommandLine.Builder;
+using System.CommandLine.Parsing;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace Backender.Cli
 {
     internal class Program
     {
-         const string Banner =
-@"
+        const string Banner = @"
        ██████╗░░█████╗░░█████╗░██╗░░██╗███████╗███╗░░██╗██████╗░███████╗██████╗░
        ██╔══██╗██╔══██╗██╔══██╗██║░██╔╝██╔════╝████╗░██║██╔══██╗██╔════╝██╔══██╗
        ██████╦╝███████║██║░░╚═╝█████═╝░█████╗░░██╔██╗██║██║░░██║█████╗░░██████╔╝
        ██╔══██╗██╔══██║██║░░██╗██╔═██╗░██╔══╝░░██║╚████║██║░░██║██╔══╝░░██╔══██╗
        ██████╦╝██║░░██║╚█████╔╝██║░╚██╗███████╗██║░╚███║██████╔╝███████╗██║░░██║
        ╚═════╝░╚═╝░░╚═╝░╚════╝░╚═╝░░╚═╝╚══════╝╚═╝░░╚══╝╚═════╝░╚══════╝╚═╝░░╚═╝";
-        const string Information =
-@"
- Backender.Cli v3.0.0-preview.1
- Created by: Mahdi Hoseinpoor
-";
 
-        static async Task Main(string[] args)
+        static async Task<int> Main(string[] args)
         {
-            string FileName = string.Empty;
-            if (args.Count() > 1)
+            var rootCommand = new RootCommand("Backender CLI: A tool to generate backend projects from an XML blueprint.")
             {
-                FileName = args[0];
-            }
-            BlueprintCompiler.Configure();
-            EngineBuilder builder = new();
-            var engine = builder.WithDefaultPipeline().Build();
-            ConsoleColor DefaultBackgroundColor = Console.BackgroundColor;
-            WriteMessage(Banner, ConsoleColor.Blue);
-            WriteMessage(Information, ConsoleColor.Blue);
-            while (true)
+                CreateGenerateCommand(),
+                CreateValidateCommand(),
+                CreateInitCommand()
+            };
+            rootCommand.Name = "Backender";
+
+            if (args.Length == 0)
             {
-                try
-                {
-                    if (string.IsNullOrEmpty(FileName))
-                    {
-                        FileName = ReadLine("Enter The Location of Blueprint File", ConsoleColor.White)!.Trim();
-                    }
-                    var startTime = DateTime.Now.Ticks;
-                    if (File.Exists(FileName))
-                    {
-                        var xmldoc = XmlDeserializer.GetXmlDocument(FileName);
-                        WriteMessage($"--- {FileName} -> The Blueprint File Processing has been start");
-
-                        var Blueprint = XmlDeserializer.ConvertXmlToBlueprint(xmldoc);
-                        Blueprint.Compile(FileName);
-                        Blueprint = Blueprint.Configuration();
-                        var Tables = TableHandler.CreateTables(Blueprint);
-                        var Files = new List<File_>();
-                        Blueprint.Validate();
-                        if (BlueprintCompiler.Messages.Any())
-                        {
-                            Console.BackgroundColor = ConsoleColor.Black;
-                            WriteMessage($"   ErrorCode | Description ", ConsoleColor.White);
-                            foreach (var message in BlueprintCompiler.Messages.OrderBy(p => p.MessageType))
-                            {
-                                ConsoleColor consoleColor = ConsoleColor.White;
-                                switch (message.MessageType)
-                                {
-                                    case MessageType.Error:
-                                        consoleColor = ConsoleColor.Red;
-                                        break;
-                                    case MessageType.Warning:
-                                        consoleColor = ConsoleColor.Yellow;
-                                        break;
-                                    case MessageType.Message:
-                                        consoleColor = ConsoleColor.Cyan;
-                                        break;
-                                    default:
-                                        break;
-                                }
-                                WriteMessage($"	{message.Code} | {message.Description}", consoleColor);
-
-                            }
-                            Console.BackgroundColor = DefaultBackgroundColor;
-                            if (BlueprintCompiler.Messages.Any(p => p.MessageType == MessageType.Error))
-                            {
-                                BlueprintCompiler.Messages.Clear();
-                                continue;
-                            }
-                        }
-
-                        WriteMessage($"\n	Backender Engine Start to Generate!");
-                        await engine.RunAsync(Blueprint);
-                        var FinishTime = DateTime.Now.Ticks;
-                        Console.ForegroundColor = ConsoleColor.Green;
-                        var CreatedTime = FinishTime - startTime;
-                        if ((CreatedTime / TimeSpan.TicksPerMillisecond) < 2000)
-                        {
-                            Console.Write($"  Your Project Has Been Created in {CreatedTime / TimeSpan.TicksPerMillisecond} Milliseconds!");
-
-                        }
-                        else
-                        {
-                            Console.Write($"  Your Project Has Been Created in {CreatedTime / TimeSpan.TicksPerSecond} Seconds!");
-                        }
-                        Console.ForegroundColor = ConsoleColor.White;
-                        WriteMessage($"\nPress Any key To Close...");
-                        Console.ReadKey();
-                        Environment.Exit(0);
-
-
-                    }
-                    else
-                    {
-                        Console.BackgroundColor = ConsoleColor.Black;
-                        WriteMessage($"	I can not found Blueprint file in '{FileName}'", ConsoleColor.Red);
-                        Console.BackgroundColor = DefaultBackgroundColor;
-                    }
-                }
-                catch (InvalidDataException e)
-                {
-                    WriteMessage($"\t{e.Message}", ConsoleColor.Red);
-                }
-                catch (XmlException)
-                {
-                    WriteMessage($"The Blueprint file has syntax error.", ConsoleColor.Red);
-                }
-                catch (Exception e)
-                {
-                    WriteMessage($"There is an Error: {e.Message}", ConsoleColor.Red);
-                }
-                finally
-                {
-                    FileName = string.Empty;
-                }
-
-
+                ConsoleHelper.WriteMessage(Banner, ConsoleColor.Blue);
+                ConsoleHelper.WriteMessage("\nBackender.Cli v3.0.0-preview.2\nCreated by: Mahdi Hoseinpoor\n", ConsoleColor.Cyan);
+                ConsoleHelper.WriteMessage("Use 'Backender --help' to see available commands.");
+                return 0;
             }
+
+            var commandLineBuilder = new CommandLineBuilder(rootCommand);
+            commandLineBuilder.UseDefaults();
+            var parser = commandLineBuilder.Build();
+
+            return await parser.InvokeAsync(args);
         }
-        public static void WriteMessage(string content, ConsoleColor consoleColor = ConsoleColor.White)
+
+        private static Command CreateGenerateCommand()
         {
-            Console.ForegroundColor = consoleColor;
-            Console.WriteLine($" {content}");
+            var blueprintArgument = new Argument<FileInfo>(
+                name: "blueprint",
+                description: "The path to the XML blueprint file.")
+            {
+                Arity = ArgumentArity.ExactlyOne
+            }.ExistingOnly(); // Built-in validation for file existence
+
+            var command = new Command("generate", "Generates the full project structure from a blueprint file.")
+            {
+                blueprintArgument
+            };
+
+            command.SetHandler(GenerateCommand.ExecuteAsync, blueprintArgument);
+            return command;
         }
-        public static string ReadLine(string message, ConsoleColor messageColor)
+
+        private static Command CreateValidateCommand()
         {
-            Console.ForegroundColor = messageColor;
-            Console.Write($" {message}");
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.Write($": ");
-            return Console.ReadLine();
+            var blueprintArgument = new Argument<FileInfo>(
+                name: "blueprint",
+                description: "The blueprint file to validate.")
+            {
+                Arity = ArgumentArity.ExactlyOne
+            }.ExistingOnly();
+
+            var command = new Command("validate", "Validates the syntax and integrity of a blueprint file.")
+            {
+                blueprintArgument
+            };
+
+            command.SetHandler(ValidateCommand.ExecuteAsync, blueprintArgument);
+            return command;
         }
-        public static string ReadLine()
+
+        private static Command CreateInitCommand()
         {
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.Write($" {Environment.UserName}");
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.Write($":");
-            Console.ForegroundColor = ConsoleColor.Blue;
-            Console.Write($"~");
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.Write($"$ ");
-            return Console.ReadLine();
+            var fileNameOption = new Option<string>(
+                aliases: new[] { "--file", "-f" },
+                description: "The name of the blueprint file to create.",
+                getDefaultValue: () => "blueprint.xml");
+
+            var command = new Command("init", "Creates a new, empty 'blueprint.xml' file in the current directory.")
+            {
+                fileNameOption
+            };
+
+            command.SetHandler(InitCommand.ExecuteAsync, fileNameOption);
+            return command;
         }
-       
     }
 }

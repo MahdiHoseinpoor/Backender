@@ -91,7 +91,7 @@ namespace Backender.Generator
 
             var defaultPath = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                "Backender",
+                "Backender 2026",
                 "Sources",
                 blueprint.Solution.SolutionName
             );
