@@ -43,7 +43,11 @@ namespace Backender.Fluent
         /// Builds the blueprint, runs the generator engine, and creates the project files.
         /// This is the final step in the chain.
         /// </summary>
-        public async Task GenerateAsync()
+        public async Task GenerateWithDefaultPipelineAsync()
+        {
+            await GenerateAsync(builder => builder.WithDefaultPipeline());
+        }
+        public async Task GenerateAsync(Action<EngineBuilder> configure)
         {
             BlueprintCompiler.Configure();
             var configuredBlueprint = _blueprint.Configuration();
@@ -58,8 +62,9 @@ namespace Backender.Fluent
                 var errors = string.Join("\n", errorMessages.Select(e => $"[{e.Code}]: {e.Description}"));
                 throw new InvalidOperationException($"Blueprint validation failed:\n{errors}");
             }
-
-            var engine = new EngineBuilder().WithDefaultPipeline().Build();
+            var engineBuilder = new EngineBuilder();
+            configure(engineBuilder);
+            var engine = engineBuilder.Build();
             await engine.RunAsync(configuredBlueprint);
         }
     }

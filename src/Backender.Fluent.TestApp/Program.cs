@@ -41,6 +41,6 @@ await BackenderFluent.Define(
         .HasOne("Product");
 })
 .UseValidation(ValidationControl.FluentValidation)
-.GenerateAsync(); 
+.GenerateWithDefaultPipelineAsync(); 
 
 Console.WriteLine("Code generation complete!");
