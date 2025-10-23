@@ -1,16 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
+﻿using System.Xml.Serialization;
 
 namespace Backender.Translator
 {
@@ -69,6 +57,7 @@ namespace Backender.Translator
     {
         [XmlAttribute("Name")]
         public string EntityName { get; set; }
+
         [XmlAttribute("Category")]
         public string EntityCategory { get; set; }
 
@@ -77,6 +66,7 @@ namespace Backender.Translator
 
         [XmlAttribute("Options")]
         public string Options { get; set; } = string.Empty;
+
         [XmlIgnore]
         public Dictionary<string, string> DataBag { get; set; } = new Dictionary<string, string>();
 
@@ -139,5 +129,40 @@ namespace Backender.Translator
 
         [XmlAttribute("Namespace")]
         public string SolutionNamespace { get; set; }
+
+        [XmlAttribute("UseDefaultStructure")]
+        public bool UseDefaultStructure { get; set; }
+
+        [XmlElement("Projects")]
+        public List<Project_> Projects { get; set; }
     }
+    public class Project_ : BlueprintTag
+    {
+        [XmlAttribute("Name")]
+        public string Name { get; set; }
+        [XmlAttribute("Role")]
+        public string Role { get; set; }
+        [XmlAttribute("Path")]
+        public string Path { get; set; }
+        [XmlAttribute("Sdk")]
+        public string Sdk { get; set; }
+        [XmlElement("ProjectReferences")]
+        public List<ProjectReference_> ProjectReferences { get; set; }
+        [XmlElement("PackageReferences")]
+        public List<PackageReference_> PackageReferences { get; set; }
+    }
+    public class ProjectReference_ : BlueprintTag
+    {
+        [XmlAttribute("Include")]
+        public string Include { get; set; }
+    }
+    public class PackageReference_ : BlueprintTag
+    {
+        [XmlAttribute("Include")]
+        public string Include { get; set; }
+
+        [XmlAttribute("Version")]
+        public string Version { get; set; }
+    }
+
 }

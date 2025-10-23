@@ -1,185 +1,130 @@
 ﻿using Backender.Translator;
-using Backender.Translator.Handlers;
-using Backender.Generator.Templates;
-
-using Backender.Core.Models;
-using Backender.Translator.Templates;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Diagnostics;
-using System.Linq;
-using System.Reflection.Emit;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
+using System.IO;
 using System.Threading.Tasks;
 using File = Backender.Core.Models.File;
 
 namespace Backender.Generator
 {
+    /// <summary>
+    /// The primary orchestrator for the code generation process.
+    /// This engine is responsible for executing a series of generation steps
+    /// and writing the resulting files to disk. It is completely decoupled
+    /// from the specific steps it runs, which are provided via dependency injection.
+    /// </summary>
     public class Engine
     {
-        public async Task RunAsync(Blueprint Blueprint)
+        private readonly IEnumerable<IGenerationStep> _generationSteps;
+        private readonly ILogger<Engine> _logger;
+
+        #region Constructor
+        /// <summary>
+        /// Initializes a new instance of the Engine.
+        /// </summary>
+        /// <param name="generationSteps">An ordered collection of generation steps to be executed.</param>
+        /// <param name="logger">A logger for providing feedback during the generation process.</param>
+        public Engine(IEnumerable<IGenerationStep> generationSteps, ILogger<Engine> logger)
         {
-            if (string.IsNullOrEmpty(Blueprint.SavePath))
-            {
-                Blueprint.SavePath = Path.Combine(Environment.GetFolderPath(
-                  Environment.SpecialFolder.MyDoc‌​uments), "BackenderV2 2023", "Sources", Blueprint.Solution.SolutionName);
-            }
-            var Files = new List<File>();
-            Solution solution = SolutionHandler.CreateSolution(Blueprint.Solution.SolutionName, Blueprint.Solution.SolutionNamespace);
-            List<Table> Tables = TableHandler.CreateTables(Blueprint);
-            Project CoreProj = SolutionHandler.CreateProject(solution.Name + ".Core", solution.NameSpace + ".Core", "Libraries")
-                .AddPackageToProject("FluentValidation", "11.5.2"); ;
-            Project DataProj = SolutionHandler.CreateProject(solution.Name + ".Data", solution.NameSpace + ".Data", "Libraries")
-                .AddProjectReferences(CoreProj)
-                .AddPackageToProject("Microsoft.EntityFrameworkCore.SqlServer", "7.0.5");
+            _generationSteps = generationSteps;
+            _logger = logger;
+        }
+        #endregion
 
-            Project ServicesProj = SolutionHandler.CreateProject(solution.Name + ".Services", solution.NameSpace + ".Services", "Libraries")
-                .AddProjectReferences(CoreProj, DataProj)
-                .AddPackageToProject("Microsoft.EntityFrameworkCore.SqlServer", "7.0.5");
+        #region Public Methods
+        /// <summary>
+        /// Executes the entire code generation pipeline based on the provided blueprint.
+        /// </summary>
+        /// <param name="blueprint">The blueprint object that defines what to generate.</param>
+        public async Task RunAsync(Blueprint blueprint)
+        {
+            _logger.LogInformation("Code generation process started for solution: {SolutionName}", blueprint.Solution.SolutionName);
 
-            //Project ApiProj = SolutionHandler.CreateProject(solution.Name + ".Api", solution.NameSpace + ".Api", "Presentation", "Microsoft.NET.Sdk.Web")
-            //    .AddProjectReferences(CoreProj, DataProj, ServicesProj)
-            //    .AddPackageToProject("Microsoft.AspNetCore.OpenApi", "7.0.2")
-            //    .AddPackageToProject("Swashbuckle.AspNetCore", "6.4.0")
-            //    .AddPackageToProject("Microsoft.EntityFrameworkCore.Design", "7.0.5");
-            foreach (var enum_ in Blueprint.Domains.Enums)
-            {
-                await CreateEnumFileAsync(Files, enum_, CoreProj);
-            }
-            foreach (var table in Tables)
-            {
-                await CreateEntityFileAsync(Files, Tables, table, CoreProj);
+            var context = new GenerationContext(blueprint);
+            await ExecuteGenerationStepsAsync(context);
+            string savePath = DetermineSavePath(blueprint);
+            await WriteFilesToDiskAsync(context.GeneratedFiles, savePath);
 
-                if (!table.Options.HasOption("MiddleEntity"))
+            _logger.LogInformation("Successfully generated {FileCount} files at: {SavePath}", context.GeneratedFiles.Count, savePath);
+            _logger.LogInformation("Code generation process finished successfully.");
+        }
+        #endregion
+
+        #region Private Helpers
+        /// <summary>
+        /// Iterates through the injected generation steps and executes them sequentially.
+        /// </summary>
+        private async Task ExecuteGenerationStepsAsync(GenerationContext context)
+        {
+            _logger.LogInformation("Executing {StepCount} generation steps...", _generationSteps.Count());
+
+            foreach (var step in _generationSteps)
+            {
+                var stepName = step.GetType().Name;
+                _logger.LogDebug("Executing step: {StepName}", stepName);
+
+                try
                 {
-                    await CreateDtoFileAsync(Files, Tables, table, CoreProj);
+                    await step.ExecuteAsync(context);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "An error occurred during the '{StepName}' step.", stepName);
+                    throw;
                 }
             }
-            foreach (var tableCategory in Tables.Select(p => p.Category).Distinct())
+            _logger.LogInformation("All generation steps completed successfully.");
+        }
+
+        /// <summary>
+        /// Determines the root directory where the solution will be saved.
+        /// Uses the path from the blueprint if provided, otherwise defaults to a standard location.
+        /// </summary>
+        private string DetermineSavePath(Blueprint blueprint)
+        {
+            if (!string.IsNullOrEmpty(blueprint.SavePath))
             {
-                if (Tables.Where(p => p.Category == tableCategory).Any(p => p.IsNormalEntity()))
+                _logger.LogDebug("Using custom save path from blueprint: {SavePath}", blueprint.SavePath);
+                return blueprint.SavePath;
+            }
+
+            var defaultPath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                "Backender",
+                "Sources",
+                blueprint.Solution.SolutionName
+            );
+
+            _logger.LogDebug("No custom save path provided. Using default: {DefaultPath}", defaultPath);
+            return defaultPath;
+        }
+
+        /// <summary>
+        /// Writes a collection of File objects to the specified base path on the disk.
+        /// </summary>
+        private async Task WriteFilesToDiskAsync(IEnumerable<File> files, string basePath)
+        {
+            _logger.LogInformation("Writing {FileCount} files to disk...", files.Count());
+
+            foreach (var file in files)
+            {
+                try
                 {
-                    await CreateDtoFactoryFileAsync(Files, Tables, tableCategory, ServicesProj, CoreProj);
+                    string fullDirectoryPath = Path.Combine(basePath, file.Path);
+                    string fullFilePath = Path.Combine(fullDirectoryPath, file.Name + file.Extension);
+                    Directory.CreateDirectory(fullDirectoryPath);
+
+                    _logger.LogDebug("Writing file: {FilePath}", fullFilePath);
+                    await System.IO.File.WriteAllTextAsync(fullFilePath, file.BodyContext);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to write file: {FileName}", file.Name + file.Extension);
+                    throw;
                 }
             }
-            await CreateDbContextFileAsync(Files, Tables, CoreProj, DataProj);
-            await CreateRepoFileAsync(Files, Tables, CoreProj, DataProj);
-            solution.Projects.Add(CoreProj);
-            solution.Projects.Add(DataProj);
-            solution.Projects.Add(ServicesProj);
-            //solution.Projects.Add(ApiProj);
-            await CreateSolutionFilesAsync(Blueprint, Files, solution);
-            foreach (var project in solution.Projects)
-            {
-                await CreateProjectsFilesAsync(Blueprint, Files, project);
-            }
-            await CreateUnitOfWorkFileAsync(Files, Tables, ServicesProj, CoreProj, DataProj);
-            foreach (var table in Tables.Where(p => p.IsNormalEntity()))
-            {
-                await CreateServiceFileAsync(Files, table, CoreProj, DataProj, ServicesProj);
-                //await CreateAPIControllerFileAsync(Files, table, ApiProj, CoreProj, DataProj, ServicesProj);
-            }
-            //await CreateAPIProgramFileAsync(Files, ApiProj, DataProj, ServicesProj);
-            foreach (var file in Files)
-            {
-                await BuildFileAsync(file, Blueprint.SavePath);
-            }
         }
-
-        
-
-        private async Task BuildFileAsync(File file, string savePath)
-        {
-            if (!Directory.Exists(file.Path))
-            {
-                Directory.CreateDirectory(Path.Combine(savePath, file.Path));
-            }
-            await System.IO.File.WriteAllTextAsync(Path.Combine(savePath, file.Path, file.Name + file.Extension), file.BodyContext);
-        }
-
-        private static async Task CreateProjectsFilesAsync(Blueprint Blueprint, List<File> Files, Project project)
-        {
-            ITemplateBase ProjectTemplate = new ProjectTemplate(project);
-            var file = await ProjectTemplate.OnCreateAsync();
-            Files.Add(file);
-        }
-        private static async Task CreateSolutionFilesAsync(Blueprint Blueprint, List<File> Files, Solution solution)
-        {
-            ITemplateBase SolutionTemplate = new SolutionTemplate(solution);
-            var solutionFile = await SolutionTemplate.OnCreateAsync();
-            Files.Add(solutionFile);
-        }
-
-        private static async Task CreateServiceFileAsync(List<File> Files, Table table, Project CoreProj, Project DataProj, Project ServicesProj)
-        {
-            IServiceTemplate iServicesTemplate = new IServiceTemplate(table, ServicesProj, CoreProj, DataProj);
-            var file = await iServicesTemplate.OnCreateAsync();
-            ServicesProj.Files.Add(file);
-            Files.Add(file);
-
-            ITemplateBase serviceTemplate = new ServiceTemplate(table, ServicesProj, CoreProj, DataProj);
-            file = await serviceTemplate.OnCreateAsync();
-            ServicesProj.Files.Add(file);
-            Files.Add(file);
-        }
-
-        private static async Task CreateDbContextFileAsync(List<File> Files, List<Table> Tables, Project CoreProj, Project DataProj)
-        {
-            ITemplateBase dbContextTemplate = new DbContextTemplate(Tables, DataProj, CoreProj);
-            var dbcontext = await dbContextTemplate.OnCreateAsync();
-            DataProj.Files.Add(dbcontext);
-            Files.Add(dbcontext);
-        }
-        private static async Task CreateRepoFileAsync(List<File> Files, List<Table> Tables, Project CoreProj, Project DataProj)
-        {
-            ITemplateBase IRepoTemplate = new IRepoTemplate(Tables, DataProj, CoreProj);
-            var IRepo = await IRepoTemplate.OnCreateAsync();
-            DataProj.Files.Add(IRepo);
-            Files.Add(IRepo);
-
-            ITemplateBase RepoTemplate = new RepoTemplate(Tables, DataProj, CoreProj);
-            var Repo = await RepoTemplate.OnCreateAsync();
-            DataProj.Files.Add(Repo);
-            Files.Add(Repo);
-        }
-
-        private static async Task CreateEntityFileAsync(List<File> Files, List<Table> tables, Table CurrentTable, Project CoreProj)
-        {
-            ITemplateBase entityTemplate = new EntityTemplate(tables, CurrentTable, CoreProj);
-            var file = await entityTemplate.OnCreateAsync();
-            CoreProj.Files.Add(file);
-            Files.Add(file);
-
-        }
-        private static async Task CreateEnumFileAsync(List<File> Files, Enum_ Enum_, Project CoreProj)
-        {
-            ITemplateBase enumTemplate = new EnumTemplate(Enum_, CoreProj);
-            var file = await enumTemplate.OnCreateAsync();
-            CoreProj.Files.Add(file);
-            Files.Add(file);
-        }
-        private static async Task CreateDtoFileAsync(List<File> Files, List<Table> tables, Table CurrentTable, Project CoreProj)
-        {
-            ITemplateBase dtoTemplate = new DtoTemplate(tables, CurrentTable, CoreProj);
-            var file = await dtoTemplate.OnCreateAsync();
-            CoreProj.Files.Add(file);
-            Files.Add(file);
-        }
-        private static async Task CreateDtoFactoryFileAsync(List<File> Files, List<Table> tables, string TableCategory, Project ServiceProj, Project CoreProj)
-        {
-            ITemplateBase dtoFactoryTemplate = new DtoFactoryTemplate(tables, TableCategory, ServiceProj, CoreProj);
-            var file = await dtoFactoryTemplate.OnCreateAsync();
-            ServiceProj.Files.Add(file);
-            Files.Add(file);
-        }
-        private static async Task CreateUnitOfWorkFileAsync(List<File> Files, List<Table> tables, Project ServiceProj, Project CoreProj, Project DataProj)
-        {
-            ITemplateBase unitOfWorkTemplate = new UnitOfWorkTemplate(tables, ServiceProj, CoreProj, DataProj);
-            var file = await unitOfWorkTemplate.OnCreateAsync();
-            ServiceProj.Files.Add(file);
-            Files.Add(file);
-        }
+        #endregion
     }
 }

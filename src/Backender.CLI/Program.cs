@@ -23,7 +23,7 @@ namespace Backender.Cli
        ╚═════╝░╚═╝░░╚═╝░╚════╝░╚═╝░░╚═╝╚══════╝╚═╝░░╚══╝╚═════╝░╚══════╝╚═╝░░╚═╝";
         const string Information =
 @"
- Backender.Cli v2.0.2
+ Backender.Cli v3.0.0-preview.1
  Created by: Mahdi Hoseinpoor
 ";
 
@@ -35,7 +35,8 @@ namespace Backender.Cli
                 FileName = args[0];
             }
             BlueprintCompiler.Configure();
-            Engine engine = new Engine();
+            EngineBuilder builder = new();
+            var engine = builder.WithDefaultPipeline().Build();
             ConsoleColor DefaultBackgroundColor = Console.BackgroundColor;
             WriteMessage(Banner, ConsoleColor.Blue);
             WriteMessage(Information, ConsoleColor.Blue);

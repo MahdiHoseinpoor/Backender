@@ -11,6 +11,92 @@ namespace Backender.Translator.Handlers
 {
     public static class SolutionHandler
     {
+        public static Solution CreateFromBlueprint(Blueprint blueprint)
+        {
+            var solution = new Solution
+            {
+                Name = blueprint.Solution.SolutionName,
+                NameSpace = blueprint.Solution.SolutionNamespace
+            };
+
+            if (blueprint.Solution.UseDefaultStructure || !blueprint.Solution.Projects.Any())
+            {
+                CreateDefaultSolutionStructure(solution);
+            }
+            else
+            {
+                CreateCustomSolutionStructure(solution, blueprint.Solution.Projects);
+            }
+
+            return solution;
+        }
+        private static void CreateDefaultSolutionStructure(Solution solution)
+        {
+            var coreProject = new Project
+            {
+                Name = $"{solution.Name}.Core",
+                NameSpace = $"{solution.NameSpace}.Core",
+                Path = "Libraries",
+                Role = "Core"
+            };
+            coreProject.Packages.Add(new Package { Name = "FluentValidation", Version = "11.5.2" });
+
+            var dataProject = new Project
+            {
+                Name = $"{solution.Name}.Data",
+                NameSpace = $"{solution.NameSpace}.Data",
+                Path = "Libraries",
+                Role = "Data"
+            };
+            dataProject.Packages.Add(new Package { Name = "Microsoft.EntityFrameworkCore.SqlServer", Version = "7.0.5" });
+            dataProject.ReferenceProjects.Add(coreProject);
+
+            var servicesProject = new Project
+            {
+                Name = $"{solution.Name}.Services",
+                NameSpace = $"{solution.NameSpace}.Services",
+                Path = "Libraries",
+                Role = "Services"
+            };
+            servicesProject.Packages.Add(new Package { Name = "Microsoft.EntityFrameworkCore.SqlServer", Version = "7.0.5" });
+            servicesProject.ReferenceProjects.Add(coreProject);
+            servicesProject.ReferenceProjects.Add(dataProject);
+
+            solution.Projects.AddRange(new[] { coreProject, dataProject, servicesProject });
+        }
+        private static void CreateCustomSolutionStructure(Solution solution, List<Project_> projectDefinitions)
+        {
+            foreach (var projDef in projectDefinitions)
+            {
+                string projectName = projDef.Name.Replace("{Solution.Name}", solution.Name);
+                var project = new Project
+                {
+                    Name = projectName,
+                    NameSpace = $"{solution.NameSpace}.{projectName.Split('.').Last()}",
+                    Path = projDef.Path,
+                    SDK = projDef.Sdk,
+                    Role = projDef.Role
+                };
+                foreach (var pkg in projDef.PackageReferences)
+                {
+                    project.Packages.Add(new Package { Name = pkg.Include, Version = pkg.Version });
+                }
+                solution.Projects.Add(project);
+            }
+            foreach (var projDef in projectDefinitions)
+            {
+                var currentProject = solution.Projects.First(p => p.Name == projDef.Name.Replace("{Solution.Name}", solution.Name));
+                foreach (var projRef in projDef.ProjectReferences)
+                {
+                    string referenceName = projRef.Include.Replace("{Solution.Name}", solution.Name);
+                    var referencedProject = solution.Projects.FirstOrDefault(p => p.Name == referenceName);
+                    if (referencedProject != null)
+                    {
+                        currentProject.ReferenceProjects.Add(referencedProject);
+                    }
+                }
+            }
+        }
         public static Solution CreateSolution(string name,string NameSpace)
         {
             Solution solution = new Solution()

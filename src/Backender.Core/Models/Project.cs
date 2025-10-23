@@ -13,6 +13,7 @@ namespace Backender.Core.Models
         public string SDK { get; set; } = "Microsoft.NET.Sdk";
         public string NameSpace { get; set; }
         public string Path { get; set; }
+        public string Role { get; set; }
         public List<File> Files { get; set; } = new();
         public List<Project> ReferenceProjects { get; set; } = new();
         public List<Package> Packages { get; set; } = new();
