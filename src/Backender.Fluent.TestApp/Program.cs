@@ -3,7 +3,7 @@ using Backender.Fluent;
 
 Console.WriteLine("Starting code generation with the new Fluent API...");
 
-await BackenderFluent.Define(
+await backender.Define(
     solutionName: "SmartShop",
     rootNamespace: "SmartShop.Backend",
     savePath: "C:\\Users\\Mahdi Hoseinpoor\\Documents\\Backender")

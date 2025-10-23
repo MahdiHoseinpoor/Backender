@@ -3,7 +3,7 @@
     /// <summary>
     /// The main entry point for defining and generating a Backender solution.
     /// </summary>
-    public static class BackenderFluent
+    public static class backender
     {
         /// <summary>
         /// Begins the definition of a new Backender blueprint.
